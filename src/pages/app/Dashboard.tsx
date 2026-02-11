@@ -1,22 +1,52 @@
 import { motion } from "framer-motion";
 import {
-  Users, Car, FileText, Wrench, ClipboardCheck, Star, Target, CarFront
+  Users, Car, FileText, Wrench, ClipboardCheck, Star, Target, CarFront, Shield
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useUserDealerId } from "@/hooks/useCustomers";
 
-const stats = [
-  { label: "Customers", value: "0", icon: Users, change: "—" },
-  { label: "Vehicles in Stock", value: "0", icon: Car, change: "—" },
-  { label: "Open Leads", value: "0", icon: Target, change: "—" },
-  { label: "Invoices (MTD)", value: "0", icon: FileText, change: "—" },
-  { label: "Aftersales Open", value: "0", icon: Wrench, change: "—" },
-  { label: "Tasks Due Today", value: "0", icon: ClipboardCheck, change: "—" },
-  { label: "Courtesy Cars Out", value: "0", icon: CarFront, change: "—" },
-  { label: "Reviews Sent (MTD)", value: "0", icon: Star, change: "—" },
-];
+function useDashboardStats() {
+  const { data: dealerId } = useUserDealerId();
+
+  return useQuery({
+    queryKey: ["dashboard-stats", dealerId],
+    queryFn: async () => {
+      const [customers, vehicles, leads, invoices, aftersales, warranties] = await Promise.all([
+        supabase.from("customers").select("id", { count: "exact", head: true }),
+        supabase.from("vehicles").select("id", { count: "exact", head: true }).eq("status", "in_stock"),
+        supabase.from("leads").select("id", { count: "exact", head: true }).in("status", ["new", "contacted", "viewing", "negotiating"]),
+        supabase.from("invoices").select("id", { count: "exact", head: true }),
+        supabase.from("aftersales").select("id", { count: "exact", head: true }).in("status", ["open", "in_progress", "awaiting_parts"]),
+        supabase.from("warranties").select("id", { count: "exact", head: true }).eq("status", "active"),
+      ]);
+
+      return {
+        customers: customers.count ?? 0,
+        vehiclesInStock: vehicles.count ?? 0,
+        openLeads: leads.count ?? 0,
+        invoices: invoices.count ?? 0,
+        aftersalesOpen: aftersales.count ?? 0,
+        activeWarranties: warranties.count ?? 0,
+      };
+    },
+    enabled: !!dealerId,
+  });
+}
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const { data: stats } = useDashboardStats();
+
+  const cards = [
+    { label: "Customers", value: stats?.customers ?? 0, icon: Users },
+    { label: "Vehicles in Stock", value: stats?.vehiclesInStock ?? 0, icon: Car },
+    { label: "Open Leads", value: stats?.openLeads ?? 0, icon: Target },
+    { label: "Invoices", value: stats?.invoices ?? 0, icon: FileText },
+    { label: "Aftersales Open", value: stats?.aftersalesOpen ?? 0, icon: Wrench },
+    { label: "Active Warranties", value: stats?.activeWarranties ?? 0, icon: Shield },
+  ];
 
   return (
     <div>
@@ -27,8 +57,8 @@ export default function Dashboard() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {stats.map((stat, i) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        {cards.map((stat, i) => (
           <motion.div
             key={stat.label}
             initial={{ opacity: 0, y: 10 }}
@@ -40,7 +70,6 @@ export default function Dashboard() {
               <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
                 <stat.icon className="h-4 w-4 text-primary" />
               </div>
-              <span className="text-xs text-muted-foreground">{stat.change}</span>
             </div>
             <p className="text-2xl font-bold text-foreground">{stat.value}</p>
             <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>

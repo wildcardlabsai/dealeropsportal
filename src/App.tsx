@@ -22,10 +22,18 @@ import VehicleList from "./pages/app/vehicles/VehicleList";
 import VehicleCreate from "./pages/app/vehicles/VehicleCreate";
 import VehicleProfile from "./pages/app/vehicles/VehicleProfile";
 import VehicleChecks from "./pages/app/checks/VehicleChecks";
+import LeadList from "./pages/app/leads/LeadList";
+import LeadCreate from "./pages/app/leads/LeadCreate";
+import LeadProfile from "./pages/app/leads/LeadProfile";
+import InvoiceList from "./pages/app/invoices/InvoiceList";
+import InvoiceCreate from "./pages/app/invoices/InvoiceCreate";
+import WarrantyList from "./pages/app/warranties/WarrantyList";
+import WarrantyCreate from "./pages/app/warranties/WarrantyCreate";
+import AftersaleList from "./pages/app/aftersales/AftersaleList";
+import AftersaleCreate from "./pages/app/aftersales/AftersaleCreate";
 import NotFound from "./pages/NotFound";
 import {
-  Target, FileText, Shield, Wrench, CarFront,
-  ClipboardCheck, Star, FolderOpen, BarChart3, MessageSquare,
+  CarFront, ClipboardCheck, Star, FolderOpen, BarChart3, MessageSquare,
   CreditCard, ScrollText, Settings
 } from "lucide-react";
 
@@ -70,11 +78,24 @@ const App = () => (
               {/* Vehicle Checks */}
               <Route path="checks" element={<VehicleChecks />} />
 
+              {/* Leads */}
+              <Route path="leads" element={<LeadList />} />
+              <Route path="leads/new" element={<LeadCreate />} />
+              <Route path="leads/:id" element={<LeadProfile />} />
+
+              {/* Invoices */}
+              <Route path="invoices" element={<InvoiceList />} />
+              <Route path="invoices/new" element={<InvoiceCreate />} />
+
+              {/* Warranties */}
+              <Route path="warranties" element={<WarrantyList />} />
+              <Route path="warranties/new" element={<WarrantyCreate />} />
+
+              {/* Aftersales */}
+              <Route path="aftersales" element={<AftersaleList />} />
+              <Route path="aftersales/new" element={<AftersaleCreate />} />
+
               {/* Placeholder modules */}
-              <Route path="leads" element={<PlaceholderPage title="Leads Pipeline" description="Track and convert enquiries" icon={Target} />} />
-              <Route path="invoices" element={<PlaceholderPage title="Invoices" description="Create and manage sale invoices" icon={FileText} />} />
-              <Route path="warranties" element={<PlaceholderPage title="Warranties" description="Warranty management and tracking" icon={Shield} />} />
-              <Route path="aftersales" element={<PlaceholderPage title="Aftersales" description="Complaint and case management" icon={Wrench} />} />
               <Route path="courtesy-cars" element={<PlaceholderPage title="Courtesy Cars" description="Loan vehicle tracking" icon={CarFront} />} />
               <Route path="tasks" element={<PlaceholderPage title="Tasks & Follow-ups" description="Manage your to-do list" icon={ClipboardCheck} />} />
               <Route path="reviews" element={<PlaceholderPage title="Review Booster" description="Automated review request campaigns" icon={Star} />} />

@@ -14,6 +14,79 @@ export type Database = {
   }
   public: {
     Tables: {
+      aftersales: {
+        Row: {
+          assigned_to: string | null
+          case_type: Database["public"]["Enums"]["aftersale_type"]
+          created_at: string
+          created_by_user_id: string | null
+          customer_id: string | null
+          dealer_id: string
+          description: string | null
+          id: string
+          resolution: string | null
+          resolved_at: string | null
+          status: Database["public"]["Enums"]["aftersale_status"]
+          subject: string
+          updated_at: string
+          vehicle_id: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          case_type?: Database["public"]["Enums"]["aftersale_type"]
+          created_at?: string
+          created_by_user_id?: string | null
+          customer_id?: string | null
+          dealer_id: string
+          description?: string | null
+          id?: string
+          resolution?: string | null
+          resolved_at?: string | null
+          status?: Database["public"]["Enums"]["aftersale_status"]
+          subject: string
+          updated_at?: string
+          vehicle_id?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          case_type?: Database["public"]["Enums"]["aftersale_type"]
+          created_at?: string
+          created_by_user_id?: string | null
+          customer_id?: string | null
+          dealer_id?: string
+          description?: string | null
+          id?: string
+          resolution?: string | null
+          resolved_at?: string | null
+          status?: Database["public"]["Enums"]["aftersale_status"]
+          subject?: string
+          updated_at?: string
+          vehicle_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aftersales_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aftersales_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: false
+            referencedRelation: "dealers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aftersales_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_logs: {
         Row: {
           action_type: string
@@ -280,6 +353,196 @@ export type Database = {
         }
         Relationships: []
       }
+      invoice_items: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          invoice_id: string
+          quantity: number
+          total: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          invoice_id: string
+          quantity?: number
+          total?: number
+          unit_price?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          invoice_id?: string
+          quantity?: number
+          total?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_items_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoices: {
+        Row: {
+          created_at: string
+          created_by_user_id: string | null
+          customer_id: string | null
+          dealer_id: string
+          due_date: string | null
+          id: string
+          invoice_number: string
+          notes: string | null
+          paid_at: string | null
+          status: Database["public"]["Enums"]["invoice_status"]
+          subtotal: number
+          total: number
+          updated_at: string
+          vat_amount: number
+          vehicle_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by_user_id?: string | null
+          customer_id?: string | null
+          dealer_id: string
+          due_date?: string | null
+          id?: string
+          invoice_number: string
+          notes?: string | null
+          paid_at?: string | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          subtotal?: number
+          total?: number
+          updated_at?: string
+          vat_amount?: number
+          vehicle_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by_user_id?: string | null
+          customer_id?: string | null
+          dealer_id?: string
+          due_date?: string | null
+          id?: string
+          invoice_number?: string
+          notes?: string | null
+          paid_at?: string | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          subtotal?: number
+          total?: number
+          updated_at?: string
+          vat_amount?: number
+          vehicle_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: false
+            referencedRelation: "dealers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leads: {
+        Row: {
+          assigned_to: string | null
+          created_at: string
+          customer_id: string | null
+          dealer_id: string
+          email: string | null
+          estimated_value: number | null
+          first_name: string
+          id: string
+          last_name: string
+          notes: string | null
+          phone: string | null
+          source: Database["public"]["Enums"]["lead_source"]
+          status: Database["public"]["Enums"]["lead_status"]
+          updated_at: string
+          vehicle_id: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string
+          customer_id?: string | null
+          dealer_id: string
+          email?: string | null
+          estimated_value?: number | null
+          first_name: string
+          id?: string
+          last_name: string
+          notes?: string | null
+          phone?: string | null
+          source?: Database["public"]["Enums"]["lead_source"]
+          status?: Database["public"]["Enums"]["lead_status"]
+          updated_at?: string
+          vehicle_id?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string
+          customer_id?: string | null
+          dealer_id?: string
+          email?: string | null
+          estimated_value?: number | null
+          first_name?: string
+          id?: string
+          last_name?: string
+          notes?: string | null
+          phone?: string | null
+          source?: Database["public"]["Enums"]["lead_source"]
+          status?: Database["public"]["Enums"]["lead_status"]
+          updated_at?: string
+          vehicle_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: false
+            referencedRelation: "dealers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -490,6 +753,82 @@ export type Database = {
           },
         ]
       }
+      warranties: {
+        Row: {
+          cost: number | null
+          coverage_details: string | null
+          created_at: string
+          customer_id: string | null
+          dealer_id: string
+          end_date: string
+          id: string
+          mileage_limit: number | null
+          notes: string | null
+          policy_number: string | null
+          provider: string | null
+          start_date: string
+          status: Database["public"]["Enums"]["warranty_status"]
+          updated_at: string
+          vehicle_id: string | null
+        }
+        Insert: {
+          cost?: number | null
+          coverage_details?: string | null
+          created_at?: string
+          customer_id?: string | null
+          dealer_id: string
+          end_date: string
+          id?: string
+          mileage_limit?: number | null
+          notes?: string | null
+          policy_number?: string | null
+          provider?: string | null
+          start_date: string
+          status?: Database["public"]["Enums"]["warranty_status"]
+          updated_at?: string
+          vehicle_id?: string | null
+        }
+        Update: {
+          cost?: number | null
+          coverage_details?: string | null
+          created_at?: string
+          customer_id?: string | null
+          dealer_id?: string
+          end_date?: string
+          id?: string
+          mileage_limit?: number | null
+          notes?: string | null
+          policy_number?: string | null
+          provider?: string | null
+          start_date?: string
+          status?: Database["public"]["Enums"]["warranty_status"]
+          updated_at?: string
+          vehicle_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "warranties_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "warranties_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: false
+            referencedRelation: "dealers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "warranties_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -504,6 +843,13 @@ export type Database = {
       is_super_admin: { Args: never; Returns: boolean }
     }
     Enums: {
+      aftersale_status:
+        | "open"
+        | "in_progress"
+        | "awaiting_parts"
+        | "resolved"
+        | "closed"
+      aftersale_type: "complaint" | "repair" | "recall" | "goodwill" | "other"
       app_role: "super_admin" | "dealer_admin" | "dealer_user"
       contact_method: "phone" | "email" | "whatsapp" | "post"
       dealer_status: "active" | "suspended" | "pending"
@@ -514,6 +860,23 @@ export type Database = {
         | "hybrid"
         | "plug_in_hybrid"
         | "other"
+      invoice_status: "draft" | "sent" | "paid" | "overdue" | "cancelled"
+      lead_source:
+        | "walk_in"
+        | "phone"
+        | "website"
+        | "autotrader"
+        | "ebay"
+        | "facebook"
+        | "referral"
+        | "other"
+      lead_status:
+        | "new"
+        | "contacted"
+        | "viewing"
+        | "negotiating"
+        | "won"
+        | "lost"
       transmission_type: "manual" | "automatic" | "other"
       vehicle_location: "on_site" | "garage" | "customer" | "other"
       vehicle_status:
@@ -522,6 +885,7 @@ export type Database = {
         | "sold"
         | "in_repair"
         | "returned"
+      warranty_status: "active" | "expired" | "claimed" | "voided"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -649,6 +1013,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      aftersale_status: [
+        "open",
+        "in_progress",
+        "awaiting_parts",
+        "resolved",
+        "closed",
+      ],
+      aftersale_type: ["complaint", "repair", "recall", "goodwill", "other"],
       app_role: ["super_admin", "dealer_admin", "dealer_user"],
       contact_method: ["phone", "email", "whatsapp", "post"],
       dealer_status: ["active", "suspended", "pending"],
@@ -660,9 +1032,29 @@ export const Constants = {
         "plug_in_hybrid",
         "other",
       ],
+      invoice_status: ["draft", "sent", "paid", "overdue", "cancelled"],
+      lead_source: [
+        "walk_in",
+        "phone",
+        "website",
+        "autotrader",
+        "ebay",
+        "facebook",
+        "referral",
+        "other",
+      ],
+      lead_status: [
+        "new",
+        "contacted",
+        "viewing",
+        "negotiating",
+        "won",
+        "lost",
+      ],
       transmission_type: ["manual", "automatic", "other"],
       vehicle_location: ["on_site", "garage", "customer", "other"],
       vehicle_status: ["in_stock", "reserved", "sold", "in_repair", "returned"],
+      warranty_status: ["active", "expired", "claimed", "voided"],
     },
   },
 } as const
