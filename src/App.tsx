@@ -31,10 +31,15 @@ import WarrantyList from "./pages/app/warranties/WarrantyList";
 import WarrantyCreate from "./pages/app/warranties/WarrantyCreate";
 import AftersaleList from "./pages/app/aftersales/AftersaleList";
 import AftersaleCreate from "./pages/app/aftersales/AftersaleCreate";
+import CourtesyCarList from "./pages/app/courtesy/CourtesyCarList";
+import CourtesyCarCreate from "./pages/app/courtesy/CourtesyCarCreate";
+import TaskList from "./pages/app/tasks/TaskList";
+import TaskCreate from "./pages/app/tasks/TaskCreate";
+import AuditLog from "./pages/app/audit/AuditLog";
+import SettingsPage from "./pages/app/settings/SettingsPage";
 import NotFound from "./pages/NotFound";
 import {
-  CarFront, ClipboardCheck, Star, FolderOpen, BarChart3, MessageSquare,
-  CreditCard, ScrollText, Settings
+  Star, FolderOpen, BarChart3, MessageSquare, CreditCard
 } from "lucide-react";
 
 const queryClient = new QueryClient();
@@ -95,16 +100,26 @@ const App = () => (
               <Route path="aftersales" element={<AftersaleList />} />
               <Route path="aftersales/new" element={<AftersaleCreate />} />
 
-              {/* Placeholder modules */}
-              <Route path="courtesy-cars" element={<PlaceholderPage title="Courtesy Cars" description="Loan vehicle tracking" icon={CarFront} />} />
-              <Route path="tasks" element={<PlaceholderPage title="Tasks & Follow-ups" description="Manage your to-do list" icon={ClipboardCheck} />} />
+              {/* Courtesy Cars */}
+              <Route path="courtesy-cars" element={<CourtesyCarList />} />
+              <Route path="courtesy-cars/new" element={<CourtesyCarCreate />} />
+
+              {/* Tasks */}
+              <Route path="tasks" element={<TaskList />} />
+              <Route path="tasks/new" element={<TaskCreate />} />
+
+              {/* Audit Log */}
+              <Route path="audit" element={<AuditLog />} />
+
+              {/* Settings */}
+              <Route path="settings" element={<SettingsPage />} />
+
+              {/* Remaining placeholders */}
               <Route path="reviews" element={<PlaceholderPage title="Review Booster" description="Automated review request campaigns" icon={Star} />} />
               <Route path="documents" element={<PlaceholderPage title="Documents" description="File manager and document generation" icon={FolderOpen} />} />
               <Route path="reports" element={<PlaceholderPage title="Reports & KPIs" description="Performance metrics and exports" icon={BarChart3} />} />
               <Route path="support" element={<PlaceholderPage title="Support Tickets" description="Get help from the DealerOps team" icon={MessageSquare} />} />
               <Route path="billing" element={<PlaceholderPage title="Billing & Plan" description="Manage your subscription" icon={CreditCard} />} />
-              <Route path="audit" element={<PlaceholderPage title="Audit Log" description="View all system activity" icon={ScrollText} />} />
-              <Route path="settings" element={<PlaceholderPage title="Settings" description="Dealership settings and preferences" icon={Settings} />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />

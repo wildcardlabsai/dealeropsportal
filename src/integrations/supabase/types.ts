@@ -228,6 +228,79 @@ export type Database = {
         }
         Relationships: []
       }
+      courtesy_cars: {
+        Row: {
+          created_at: string
+          current_customer_id: string | null
+          dealer_id: string
+          expected_return: string | null
+          id: string
+          loaned_at: string | null
+          make: string | null
+          model: string | null
+          notes: string | null
+          returned_at: string | null
+          status: Database["public"]["Enums"]["courtesy_car_status"]
+          updated_at: string
+          vehicle_id: string | null
+          vrm: string
+        }
+        Insert: {
+          created_at?: string
+          current_customer_id?: string | null
+          dealer_id: string
+          expected_return?: string | null
+          id?: string
+          loaned_at?: string | null
+          make?: string | null
+          model?: string | null
+          notes?: string | null
+          returned_at?: string | null
+          status?: Database["public"]["Enums"]["courtesy_car_status"]
+          updated_at?: string
+          vehicle_id?: string | null
+          vrm: string
+        }
+        Update: {
+          created_at?: string
+          current_customer_id?: string | null
+          dealer_id?: string
+          expected_return?: string | null
+          id?: string
+          loaned_at?: string | null
+          make?: string | null
+          model?: string | null
+          notes?: string | null
+          returned_at?: string | null
+          status?: Database["public"]["Enums"]["courtesy_car_status"]
+          updated_at?: string
+          vehicle_id?: string | null
+          vrm?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "courtesy_cars_current_customer_id_fkey"
+            columns: ["current_customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "courtesy_cars_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: false
+            referencedRelation: "dealers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "courtesy_cars_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customers: {
         Row: {
           address_line1: string | null
@@ -587,6 +660,79 @@ export type Database = {
           },
         ]
       }
+      tasks: {
+        Row: {
+          assigned_to: string | null
+          completed_at: string | null
+          created_at: string
+          created_by_user_id: string | null
+          dealer_id: string
+          description: string | null
+          due_date: string | null
+          id: string
+          priority: Database["public"]["Enums"]["task_priority"]
+          related_customer_id: string | null
+          related_vehicle_id: string | null
+          status: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by_user_id?: string | null
+          dealer_id: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: Database["public"]["Enums"]["task_priority"]
+          related_customer_id?: string | null
+          related_vehicle_id?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by_user_id?: string | null
+          dealer_id?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: Database["public"]["Enums"]["task_priority"]
+          related_customer_id?: string | null
+          related_vehicle_id?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: false
+            referencedRelation: "dealers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_related_customer_id_fkey"
+            columns: ["related_customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_related_vehicle_id_fkey"
+            columns: ["related_vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -852,6 +998,7 @@ export type Database = {
       aftersale_type: "complaint" | "repair" | "recall" | "goodwill" | "other"
       app_role: "super_admin" | "dealer_admin" | "dealer_user"
       contact_method: "phone" | "email" | "whatsapp" | "post"
+      courtesy_car_status: "available" | "on_loan" | "in_service" | "retired"
       dealer_status: "active" | "suspended" | "pending"
       fuel_type:
         | "petrol"
@@ -877,6 +1024,8 @@ export type Database = {
         | "negotiating"
         | "won"
         | "lost"
+      task_priority: "low" | "medium" | "high" | "urgent"
+      task_status: "todo" | "in_progress" | "done" | "cancelled"
       transmission_type: "manual" | "automatic" | "other"
       vehicle_location: "on_site" | "garage" | "customer" | "other"
       vehicle_status:
@@ -1023,6 +1172,7 @@ export const Constants = {
       aftersale_type: ["complaint", "repair", "recall", "goodwill", "other"],
       app_role: ["super_admin", "dealer_admin", "dealer_user"],
       contact_method: ["phone", "email", "whatsapp", "post"],
+      courtesy_car_status: ["available", "on_loan", "in_service", "retired"],
       dealer_status: ["active", "suspended", "pending"],
       fuel_type: [
         "petrol",
@@ -1051,6 +1201,8 @@ export const Constants = {
         "won",
         "lost",
       ],
+      task_priority: ["low", "medium", "high", "urgent"],
+      task_status: ["todo", "in_progress", "done", "cancelled"],
       transmission_type: ["manual", "automatic", "other"],
       vehicle_location: ["on_site", "garage", "customer", "other"],
       vehicle_status: ["in_stock", "reserved", "sold", "in_repair", "returned"],
