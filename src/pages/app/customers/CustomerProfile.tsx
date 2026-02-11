@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Save, Phone, Mail, MapPin } from "lucide-react";
+import { ArrowLeft, Save, Phone, Mail, MapPin, MessageSquare, Plus, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,9 +9,128 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useCustomer, useUpdateCustomer } from "@/hooks/useCustomers";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useCustomer, useUpdateCustomer, useUserDealerId } from "@/hooks/useCustomers";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { format } from "date-fns";
+
+function CustomerTimeline({ customerId, dealerId }: { customerId: string; dealerId: string }) {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [logForm, setLogForm] = useState({ log_type: "note", subject: "", content: "" });
+
+  const { data: logs, isLoading } = useQuery({
+    queryKey: ["comm-logs", customerId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("communication_logs")
+        .select("*")
+        .eq("customer_id", customerId)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const addLog = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("communication_logs").insert({
+        dealer_id: dealerId,
+        customer_id: customerId,
+        log_type: logForm.log_type,
+        subject: logForm.subject || null,
+        content: logForm.content || null,
+        created_by_user_id: user?.id || null,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["comm-logs", customerId] });
+      toast.success("Log added");
+      setOpen(false);
+      setLogForm({ log_type: "note", subject: "", content: "" });
+    },
+    onError: (err: any) => toast.error(err.message),
+  });
+
+  const typeLabels: Record<string, string> = {
+    note: "Note", call: "Phone Call", email: "Email", sms: "SMS", meeting: "Meeting", other: "Other",
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-semibold">Communication Timeline</h3>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button size="sm"><Plus className="h-3.5 w-3.5 mr-1.5" /> Add Log</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader><DialogTitle>Add Communication Log</DialogTitle></DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label className="text-xs">Type</Label>
+                <Select value={logForm.log_type} onValueChange={(v) => setLogForm({ ...logForm, log_type: v })}>
+                  <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="note">Note</SelectItem>
+                    <SelectItem value="call">Phone Call</SelectItem>
+                    <SelectItem value="email">Email</SelectItem>
+                    <SelectItem value="sms">SMS</SelectItem>
+                    <SelectItem value="meeting">Meeting</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-xs">Subject</Label>
+                <Input value={logForm.subject} onChange={(e) => setLogForm({ ...logForm, subject: e.target.value })} className="mt-1" />
+              </div>
+              <div>
+                <Label className="text-xs">Content</Label>
+                <Textarea value={logForm.content} onChange={(e) => setLogForm({ ...logForm, content: e.target.value })} className="mt-1" rows={3} />
+              </div>
+              <Button onClick={() => addLog.mutate()} disabled={addLog.isPending} className="w-full">
+                {addLog.isPending ? "Saving..." : "Add Log"}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {isLoading ? (
+        <div className="space-y-3">{[...Array(3)].map((_, i) => <div key={i} className="h-16 rounded-lg bg-muted/30 animate-pulse" />)}</div>
+      ) : !logs?.length ? (
+        <div className="p-6 rounded-xl border border-border/50 bg-card/50 text-center">
+          <MessageSquare className="h-6 w-6 text-muted-foreground mx-auto mb-2" />
+          <p className="text-sm text-muted-foreground">No communication logs yet</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {logs.map((log) => (
+            <div key={log.id} className="p-4 rounded-xl border border-border/50 bg-card/50">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
+                  {typeLabels[log.log_type] || log.log_type}
+                </span>
+                <span className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  {format(new Date(log.created_at), "d MMM yyyy HH:mm")}
+                </span>
+              </div>
+              {log.subject && <p className="text-sm font-medium mt-2">{log.subject}</p>}
+              {log.content && <p className="text-sm text-muted-foreground mt-1 whitespace-pre-wrap">{log.content}</p>}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function CustomerProfile() {
   const { id } = useParams();
@@ -195,11 +314,7 @@ export default function CustomerProfile() {
         </TabsContent>
 
         <TabsContent value="timeline">
-          <div className="p-6 rounded-xl border border-border/50 bg-card/50">
-            <p className="text-sm text-muted-foreground text-center py-8">
-              Communication timeline will be built in the next phase.
-            </p>
-          </div>
+          <CustomerTimeline customerId={id!} dealerId={customer.dealer_id} />
         </TabsContent>
       </Tabs>
     </motion.div>

@@ -18,6 +18,8 @@ import DocumentList from "./pages/app/documents/DocumentList";
 import ReviewBooster from "./pages/app/reviews/ReviewBooster";
 import SupportTickets from "./pages/app/support/SupportTickets";
 import BillingPage from "./pages/app/billing/BillingPage";
+import SuperAdminDealers from "./pages/app/admin/SuperAdminDealers";
+import TeamManagement from "./pages/app/team/TeamManagement";
 import CustomerList from "./pages/app/customers/CustomerList";
 import CustomerCreate from "./pages/app/customers/CustomerCreate";
 import CustomerProfile from "./pages/app/customers/CustomerProfile";
@@ -121,6 +123,8 @@ const App = () => (
               <Route path="reports" element={<ReportsPage />} />
               <Route path="support" element={<SupportTickets />} />
               <Route path="billing" element={<BillingPage />} />
+              <Route path="admin/dealers" element={<SuperAdminDealers />} />
+              <Route path="team" element={<TeamManagement />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />

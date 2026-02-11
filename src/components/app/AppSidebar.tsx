@@ -1,7 +1,7 @@
 import {
   LayoutDashboard, Users, Car, FileText, Shield, Wrench, CarFront,
   Target, ClipboardCheck, Star, FolderOpen, BarChart3, MessageSquare,
-  CreditCard, Settings, ScrollText, Search, LogOut
+  CreditCard, Settings, ScrollText, Search, LogOut, Building2, UsersRound
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/contexts/AuthContext";
@@ -12,6 +12,8 @@ import {
   SidebarFooter, useSidebar
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const mainNav = [
   { title: "Dashboard", url: "/app", icon: LayoutDashboard },
@@ -33,10 +35,15 @@ const opsNav = [
 const adminNav = [
   { title: "Documents", url: "/app/documents", icon: FolderOpen },
   { title: "Reports", url: "/app/reports", icon: BarChart3 },
+  { title: "Team", url: "/app/team", icon: UsersRound },
   { title: "Support", url: "/app/support", icon: MessageSquare },
   { title: "Billing", url: "/app/billing", icon: CreditCard },
   { title: "Audit Log", url: "/app/audit", icon: ScrollText },
   { title: "Settings", url: "/app/settings", icon: Settings },
+];
+
+const superAdminNav = [
+  { title: "Dealers", url: "/app/admin/dealers", icon: Building2 },
 ];
 
 function NavGroup({ label, items }: { label: string; items: typeof mainNav }) {
@@ -70,10 +77,20 @@ function NavGroup({ label, items }: { label: string; items: typeof mainNav }) {
 }
 
 export function AppSidebar() {
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const navigate = useNavigate();
+
+  const { data: isSuperAdmin } = useQuery({
+    queryKey: ["is-super-admin", user?.id],
+    queryFn: async () => {
+      if (!user) return false;
+      const { data } = await supabase.from("user_roles").select("role").eq("user_id", user.id).eq("role", "super_admin").maybeSingle();
+      return !!data;
+    },
+    enabled: !!user,
+  });
 
   const handleSignOut = async () => {
     await signOut();
@@ -97,6 +114,7 @@ export function AppSidebar() {
         <NavGroup label="Core" items={mainNav} />
         <NavGroup label="Operations" items={opsNav} />
         <NavGroup label="Admin" items={adminNav} />
+        {isSuperAdmin && <NavGroup label="Super Admin" items={superAdminNav} />}
       </SidebarContent>
 
       <SidebarFooter className="p-2 border-t border-sidebar-border">
