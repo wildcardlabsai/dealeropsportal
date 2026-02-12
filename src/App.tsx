@@ -36,10 +36,13 @@ import InvoiceCreateModule from "./pages/app/invoices/InvoiceCreateModule";
 import InvoiceDetailModule from "./pages/app/invoices/InvoiceDetailModule";
 import WarrantyList from "./pages/app/warranties/WarrantyList";
 import WarrantyCreate from "./pages/app/warranties/WarrantyCreate";
+import WarrantyDetail from "./pages/app/warranties/WarrantyDetail";
 import AftersalesModule from "./pages/app/aftersales/AftersalesModule";
 import AftersalesCaseCreate from "./pages/app/aftersales/AftersalesCaseCreate";
 import AftersalesCaseDetail from "./pages/app/aftersales/AftersalesCaseDetail";
 import CourtesyCarList from "./pages/app/courtesy/CourtesyCarList";
+import CourtesyLoanCreate from "./pages/app/courtesy/CourtesyLoanCreate";
+import CourtesyLoanDetail from "./pages/app/courtesy/CourtesyLoanDetail";
 import CourtesyCarCreate from "./pages/app/courtesy/CourtesyCarCreate";
 import TaskList from "./pages/app/tasks/TaskList";
 import TaskCreate from "./pages/app/tasks/TaskCreate";
@@ -103,6 +106,7 @@ const App = () => (
               {/* Warranties */}
               <Route path="warranties" element={<WarrantyList />} />
               <Route path="warranties/new" element={<WarrantyCreate />} />
+              <Route path="warranties/:id" element={<WarrantyDetail />} />
 
               {/* Aftersales */}
               <Route path="aftersales" element={<AftersalesModule />} />
@@ -112,6 +116,8 @@ const App = () => (
               {/* Courtesy Cars */}
               <Route path="courtesy-cars" element={<CourtesyCarList />} />
               <Route path="courtesy-cars/new" element={<CourtesyCarCreate />} />
+              <Route path="courtesy-cars/loans/new" element={<CourtesyLoanCreate />} />
+              <Route path="courtesy-cars/loans/:id" element={<CourtesyLoanDetail />} />
 
               {/* Tasks */}
               <Route path="tasks" element={<TaskList />} />
