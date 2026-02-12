@@ -67,6 +67,8 @@ import CRAShieldList from "./pages/app/cra/CRAShieldList";
 import CRAShieldCreate from "./pages/app/cra/CRAShieldCreate";
 import CRAShieldDetail from "./pages/app/cra/CRAShieldDetail";
 import ComplianceCentre from "./pages/app/compliance/ComplianceCentre";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -87,6 +89,8 @@ const App = () => (
               <Route path="/security" element={<SecurityPage />} />
               <Route path="/support" element={<SupportPage />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsOfService />} />
             </Route>
 
             <Route path="/login" element={<PublicLayout />}>

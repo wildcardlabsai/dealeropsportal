@@ -48,11 +48,13 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-20">
+    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-20 relative">
+      <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-primary/5 blur-[120px]" />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-sm mx-4"
+        className="w-full max-w-sm mx-4 relative z-10"
       >
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-6">
@@ -177,10 +179,15 @@ export default function Login() {
           </div>
         </div>
 
-        <p className="text-[10px] text-muted-foreground text-center mt-4">
-          No account? DealerOps is invitation-only.{" "}
-          <Link to="/contact" className="text-primary hover:underline">Request access</Link>
-        </p>
+        <div className="text-center mt-4 space-y-1">
+          <p className="text-[10px] text-muted-foreground">
+            No account? DealerOps is invitation-only.{" "}
+            <Link to="/contact" className="text-primary hover:underline">Request access</Link>
+          </p>
+          <p className="text-[10px]">
+            <Link to="/" className="text-muted-foreground hover:text-primary transition-colors">What is DealerOps?</Link>
+          </p>
+        </div>
       </motion.div>
     </div>
   );

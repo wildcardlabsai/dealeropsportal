@@ -14,8 +14,11 @@ export function Footer() {
                 Dealer<span className="text-primary">Ops</span>
               </span>
             </Link>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground mb-2">
               The complete dealer management system for UK independent car dealerships.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Purpose-built for UK motor trade.
             </p>
           </div>
 
@@ -35,7 +38,10 @@ export function Footer() {
           <div>
             <h4 className="text-sm font-semibold text-foreground mb-3">Support</h4>
             <ul className="space-y-2">
-              {[{ label: "Help Centre", to: "/support" }, { label: "Contact", to: "/contact" }].map((item) => (
+              {[
+                { label: "Help Centre", to: "/support" },
+                { label: "Contact", to: "/contact" },
+              ].map((item) => (
                 <li key={item.to}>
                   <Link to={item.to} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                     {item.label}
@@ -48,8 +54,16 @@ export function Footer() {
           <div>
             <h4 className="text-sm font-semibold text-foreground mb-3">Legal</h4>
             <ul className="space-y-2">
-              <li><span className="text-sm text-muted-foreground">Privacy Policy</span></li>
-              <li><span className="text-sm text-muted-foreground">Terms of Service</span></li>
+              <li>
+                <Link to="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  Terms of Service
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
