@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useCreateVehicle } from "@/hooks/useVehicles";
 import { useUserDealerId } from "@/hooks/useCustomers";
 import { toast } from "sonner";
+import VrmLookup, { VrmLookupResult } from "@/components/app/VrmLookup";
 
 export default function VehicleCreate() {
   const navigate = useNavigate();
@@ -25,6 +26,20 @@ export default function VehicleCreate() {
 
   const update = (field: string, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }));
+
+  const handleVrmResult = (result: VrmLookupResult) => {
+    setForm((prev) => ({
+      ...prev,
+      vrm: result.vrm || prev.vrm,
+      vin: result.vin || prev.vin,
+      make: result.make || prev.make,
+      model: result.model || prev.model,
+      colour: result.colour || prev.colour,
+      year: result.yearOfManufacture ? String(result.yearOfManufacture) : prev.year,
+      mileage: result.latestMotMileage ? String(result.latestMotMileage) : prev.mileage,
+      fuel_type: result.fuelType ? result.fuelType.toLowerCase() as any : prev.fuel_type,
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,10 +87,11 @@ export default function VehicleCreate() {
         <div className="p-6 rounded-xl border border-border/50 bg-card/50 space-y-4">
           <h3 className="text-sm font-semibold">Identity</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <Label className="text-xs">Registration (VRM)</Label>
-              <Input value={form.vrm} onChange={(e) => update("vrm", e.target.value.toUpperCase())} className="mt-1 font-mono" placeholder="AB12 CDE" />
-            </div>
+            <VrmLookup
+              value={form.vrm}
+              onChange={(v) => update("vrm", v)}
+              onResult={handleVrmResult}
+            />
             <div>
               <Label className="text-xs">VIN (optional)</Label>
               <Input value={form.vin} onChange={(e) => update("vin", e.target.value)} className="mt-1 font-mono" />

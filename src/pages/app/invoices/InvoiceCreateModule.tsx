@@ -14,6 +14,7 @@ import { useUserDealerId, useCustomers } from "@/hooks/useCustomers";
 import { useVehicles } from "@/hooks/useVehicles";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import VrmLookup, { VrmLookupResult } from "@/components/app/VrmLookup";
 
 interface LineItem {
   description: string;
@@ -248,10 +249,18 @@ export default function InvoiceCreateModule() {
             </Select>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            <div>
-              <Label className="text-[10px] text-muted-foreground">Registration</Label>
-              <Input value={vrmOverride} onChange={(e) => setVrmOverride(e.target.value)} className="mt-1" placeholder="AB12 CDE" />
-            </div>
+            <VrmLookup
+              value={vrmOverride}
+              onChange={setVrmOverride}
+              onResult={(r) => {
+                setVrmOverride(r.vrm || vrmOverride);
+                if (r.vin) setVinOverride(r.vin);
+                if (r.latestMotMileage) setMileageOverride(String(r.latestMotMileage));
+                if (r.make && r.model) setMakeModelOverride(`${r.make} ${r.model}`);
+                if (r.yearOfManufacture) setFirstRegOverride(String(r.yearOfManufacture));
+              }}
+              label="Registration"
+            />
             <div>
               <Label className="text-[10px] text-muted-foreground">VIN</Label>
               <Input value={vinOverride} onChange={(e) => setVinOverride(e.target.value)} className="mt-1" />

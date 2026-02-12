@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCreateCourtesyCar } from "@/hooks/useCourtesyCars";
 import { useUserDealerId } from "@/hooks/useCustomers";
 import { toast } from "sonner";
+import VrmLookup, { VrmLookupResult } from "@/components/app/VrmLookup";
 
 export default function CourtesyCarCreate() {
   const navigate = useNavigate();
@@ -16,6 +17,16 @@ export default function CourtesyCarCreate() {
   const { data: dealerId } = useUserDealerId();
   const [form, setForm] = useState({ vrm: "", make: "", model: "", vin: "", current_mileage: "", notes: "" });
   const update = (f: string, v: string) => setForm(p => ({ ...p, [f]: v }));
+
+  const handleVrmResult = (result: VrmLookupResult) => {
+    setForm((prev) => ({
+      ...prev,
+      vrm: result.vrm || prev.vrm,
+      make: result.make || prev.make,
+      model: result.model || prev.model,
+      vin: result.vin || prev.vin,
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,10 +59,12 @@ export default function CourtesyCarCreate() {
 
       <form onSubmit={handleSubmit} className="max-w-lg space-y-6">
         <div className="p-6 rounded-xl border border-border/50 bg-card/50 space-y-4">
-          <div>
-            <Label className="text-xs">Registration (VRM) *</Label>
-            <Input value={form.vrm} onChange={(e) => update("vrm", e.target.value.toUpperCase())} required className="mt-1 font-mono" placeholder="AB12 CDE" />
-          </div>
+          <VrmLookup
+            value={form.vrm}
+            onChange={(v) => update("vrm", v)}
+            onResult={handleVrmResult}
+            required
+          />
           <div className="grid grid-cols-2 gap-4">
             <div><Label className="text-xs">Make</Label><Input value={form.make} onChange={(e) => update("make", e.target.value)} className="mt-1" /></div>
             <div><Label className="text-xs">Model</Label><Input value={form.model} onChange={(e) => update("model", e.target.value)} className="mt-1" /></div>
