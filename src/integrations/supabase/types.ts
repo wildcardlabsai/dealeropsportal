@@ -330,6 +330,7 @@ export type Database = {
       audit_logs: {
         Row: {
           action_type: string
+          actor_role: string | null
           actor_user_id: string | null
           after_data: Json | null
           before_data: Json | null
@@ -339,9 +340,12 @@ export type Database = {
           entity_type: string | null
           id: string
           ip_address: string | null
+          summary: string | null
+          user_agent: string | null
         }
         Insert: {
           action_type: string
+          actor_role?: string | null
           actor_user_id?: string | null
           after_data?: Json | null
           before_data?: Json | null
@@ -351,9 +355,12 @@ export type Database = {
           entity_type?: string | null
           id?: string
           ip_address?: string | null
+          summary?: string | null
+          user_agent?: string | null
         }
         Update: {
           action_type?: string
+          actor_role?: string | null
           actor_user_id?: string | null
           after_data?: Json | null
           before_data?: Json | null
@@ -363,6 +370,8 @@ export type Database = {
           entity_type?: string | null
           id?: string
           ip_address?: string | null
+          summary?: string | null
+          user_agent?: string | null
         }
         Relationships: [
           {
@@ -901,6 +910,56 @@ export type Database = {
         }
         Relationships: []
       }
+      document_templates: {
+        Row: {
+          category: string
+          created_at: string
+          created_by_user_id: string | null
+          dealer_id: string | null
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          template_format: string
+          template_html: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          created_by_user_id?: string | null
+          dealer_id?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          template_format?: string
+          template_html?: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          created_by_user_id?: string | null
+          dealer_id?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          template_format?: string
+          template_html?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_templates_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: false
+            referencedRelation: "dealers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       documents: {
         Row: {
           category: string | null
@@ -1017,6 +1076,63 @@ export type Database = {
             columns: ["dealer_id"]
             isOneToOne: false
             referencedRelation: "dealers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      generated_documents: {
+        Row: {
+          category: string
+          created_at: string
+          created_by_user_id: string
+          dealer_id: string
+          id: string
+          name: string
+          pdf_url: string
+          related_entity_id: string | null
+          related_entity_type: string
+          template_id: string | null
+          variables_json: Json | null
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          created_by_user_id: string
+          dealer_id: string
+          id?: string
+          name: string
+          pdf_url: string
+          related_entity_id?: string | null
+          related_entity_type?: string
+          template_id?: string | null
+          variables_json?: Json | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          created_by_user_id?: string
+          dealer_id?: string
+          id?: string
+          name?: string
+          pdf_url?: string
+          related_entity_id?: string | null
+          related_entity_type?: string
+          template_id?: string | null
+          variables_json?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generated_documents_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: false
+            referencedRelation: "dealers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "generated_documents_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "document_templates"
             referencedColumns: ["id"]
           },
         ]
@@ -1802,6 +1918,59 @@ export type Database = {
             columns: ["requested_plan_id"]
             isOneToOne: false
             referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      uploaded_files: {
+        Row: {
+          category: string
+          created_at: string
+          dealer_id: string
+          file_name: string
+          file_size: number | null
+          file_type: string | null
+          file_url: string
+          id: string
+          name: string
+          related_entity_id: string | null
+          related_entity_type: string
+          uploaded_by_user_id: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          dealer_id: string
+          file_name: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url: string
+          id?: string
+          name: string
+          related_entity_id?: string | null
+          related_entity_type?: string
+          uploaded_by_user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          dealer_id?: string
+          file_name?: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url?: string
+          id?: string
+          name?: string
+          related_entity_id?: string | null
+          related_entity_type?: string
+          uploaded_by_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "uploaded_files_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: false
+            referencedRelation: "dealers"
             referencedColumns: ["id"]
           },
         ]
