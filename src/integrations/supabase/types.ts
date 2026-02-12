@@ -472,6 +472,7 @@ export type Database = {
         Row: {
           created_at: string
           current_customer_id: string | null
+          current_mileage: number | null
           dealer_id: string
           expected_return: string | null
           id: string
@@ -483,11 +484,13 @@ export type Database = {
           status: Database["public"]["Enums"]["courtesy_car_status"]
           updated_at: string
           vehicle_id: string | null
+          vin: string | null
           vrm: string
         }
         Insert: {
           created_at?: string
           current_customer_id?: string | null
+          current_mileage?: number | null
           dealer_id: string
           expected_return?: string | null
           id?: string
@@ -499,11 +502,13 @@ export type Database = {
           status?: Database["public"]["Enums"]["courtesy_car_status"]
           updated_at?: string
           vehicle_id?: string | null
+          vin?: string | null
           vrm: string
         }
         Update: {
           created_at?: string
           current_customer_id?: string | null
+          current_mileage?: number | null
           dealer_id?: string
           expected_return?: string | null
           id?: string
@@ -515,6 +520,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["courtesy_car_status"]
           updated_at?: string
           vehicle_id?: string | null
+          vin?: string | null
           vrm?: string
         }
         Relationships: [
@@ -537,6 +543,130 @@ export type Database = {
             columns: ["vehicle_id"]
             isOneToOne: false
             referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      courtesy_loans: {
+        Row: {
+          actual_return_at: string | null
+          agreement_pdf_url: string | null
+          agreement_signed_at: string | null
+          agreement_signed_by: string | null
+          agreement_signed_mode: string | null
+          assigned_to_user_id: string | null
+          courtesy_car_id: string
+          created_at: string
+          created_by_user_id: string | null
+          customer_address: string | null
+          customer_email: string | null
+          customer_id: string | null
+          customer_name: string
+          customer_phone: string | null
+          damage_in_notes: string | null
+          damage_out_notes: string | null
+          dealer_id: string
+          deposit_amount: number | null
+          driving_licence_checked: boolean | null
+          excess_amount: number | null
+          expected_return_at: string | null
+          fuel_in: string | null
+          fuel_out: string | null
+          id: string
+          insurance_confirmed: boolean | null
+          loan_reason: string | null
+          loan_start_at: string
+          mileage_in: number | null
+          mileage_out: number | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          actual_return_at?: string | null
+          agreement_pdf_url?: string | null
+          agreement_signed_at?: string | null
+          agreement_signed_by?: string | null
+          agreement_signed_mode?: string | null
+          assigned_to_user_id?: string | null
+          courtesy_car_id: string
+          created_at?: string
+          created_by_user_id?: string | null
+          customer_address?: string | null
+          customer_email?: string | null
+          customer_id?: string | null
+          customer_name: string
+          customer_phone?: string | null
+          damage_in_notes?: string | null
+          damage_out_notes?: string | null
+          dealer_id: string
+          deposit_amount?: number | null
+          driving_licence_checked?: boolean | null
+          excess_amount?: number | null
+          expected_return_at?: string | null
+          fuel_in?: string | null
+          fuel_out?: string | null
+          id?: string
+          insurance_confirmed?: boolean | null
+          loan_reason?: string | null
+          loan_start_at?: string
+          mileage_in?: number | null
+          mileage_out?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          actual_return_at?: string | null
+          agreement_pdf_url?: string | null
+          agreement_signed_at?: string | null
+          agreement_signed_by?: string | null
+          agreement_signed_mode?: string | null
+          assigned_to_user_id?: string | null
+          courtesy_car_id?: string
+          created_at?: string
+          created_by_user_id?: string | null
+          customer_address?: string | null
+          customer_email?: string | null
+          customer_id?: string | null
+          customer_name?: string
+          customer_phone?: string | null
+          damage_in_notes?: string | null
+          damage_out_notes?: string | null
+          dealer_id?: string
+          deposit_amount?: number | null
+          driving_licence_checked?: boolean | null
+          excess_amount?: number | null
+          expected_return_at?: string | null
+          fuel_in?: string | null
+          fuel_out?: string | null
+          id?: string
+          insurance_confirmed?: boolean | null
+          loan_reason?: string | null
+          loan_start_at?: string
+          mileage_in?: number | null
+          mileage_out?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "courtesy_loans_courtesy_car_id_fkey"
+            columns: ["courtesy_car_id"]
+            isOneToOne: false
+            referencedRelation: "courtesy_cars"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "courtesy_loans_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "courtesy_loans_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: false
+            referencedRelation: "dealers"
             referencedColumns: ["id"]
           },
         ]
@@ -1445,55 +1575,82 @@ export type Database = {
       }
       warranties: {
         Row: {
+          certificate_pdf_url: string | null
           cost: number | null
+          cost_to_dealer: number | null
           coverage_details: string | null
           created_at: string
+          created_by_user_id: string | null
           customer_id: string | null
           dealer_id: string
+          duration_months: number | null
           end_date: string
           id: string
+          invoice_id: string | null
           mileage_limit: number | null
           notes: string | null
           policy_number: string | null
+          price_sold: number | null
           provider: string | null
           start_date: string
           status: Database["public"]["Enums"]["warranty_status"]
           updated_at: string
           vehicle_id: string | null
+          warranty_number: string | null
+          warranty_product_name: string | null
+          warranty_type: string | null
         }
         Insert: {
+          certificate_pdf_url?: string | null
           cost?: number | null
+          cost_to_dealer?: number | null
           coverage_details?: string | null
           created_at?: string
+          created_by_user_id?: string | null
           customer_id?: string | null
           dealer_id: string
+          duration_months?: number | null
           end_date: string
           id?: string
+          invoice_id?: string | null
           mileage_limit?: number | null
           notes?: string | null
           policy_number?: string | null
+          price_sold?: number | null
           provider?: string | null
           start_date: string
           status?: Database["public"]["Enums"]["warranty_status"]
           updated_at?: string
           vehicle_id?: string | null
+          warranty_number?: string | null
+          warranty_product_name?: string | null
+          warranty_type?: string | null
         }
         Update: {
+          certificate_pdf_url?: string | null
           cost?: number | null
+          cost_to_dealer?: number | null
           coverage_details?: string | null
           created_at?: string
+          created_by_user_id?: string | null
           customer_id?: string | null
           dealer_id?: string
+          duration_months?: number | null
           end_date?: string
           id?: string
+          invoice_id?: string | null
           mileage_limit?: number | null
           notes?: string | null
           policy_number?: string | null
+          price_sold?: number | null
           provider?: string | null
           start_date?: string
           status?: Database["public"]["Enums"]["warranty_status"]
           updated_at?: string
           vehicle_id?: string | null
+          warranty_number?: string | null
+          warranty_product_name?: string | null
+          warranty_type?: string | null
         }
         Relationships: [
           {
@@ -1511,10 +1668,75 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "warranties_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "warranties_vehicle_id_fkey"
             columns: ["vehicle_id"]
             isOneToOne: false
             referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      warranty_claims: {
+        Row: {
+          aftersales_case_id: string | null
+          claim_amount: number | null
+          claim_date: string
+          created_at: string
+          dealer_id: string
+          description: string
+          id: string
+          status: string
+          warranty_id: string
+        }
+        Insert: {
+          aftersales_case_id?: string | null
+          claim_amount?: number | null
+          claim_date?: string
+          created_at?: string
+          dealer_id: string
+          description: string
+          id?: string
+          status?: string
+          warranty_id: string
+        }
+        Update: {
+          aftersales_case_id?: string | null
+          claim_amount?: number | null
+          claim_date?: string
+          created_at?: string
+          dealer_id?: string
+          description?: string
+          id?: string
+          status?: string
+          warranty_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "warranty_claims_aftersales_case_id_fkey"
+            columns: ["aftersales_case_id"]
+            isOneToOne: false
+            referencedRelation: "aftersales_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "warranty_claims_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: false
+            referencedRelation: "dealers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "warranty_claims_warranty_id_fkey"
+            columns: ["warranty_id"]
+            isOneToOne: false
+            referencedRelation: "warranties"
             referencedColumns: ["id"]
           },
         ]
