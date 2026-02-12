@@ -1284,33 +1284,60 @@ export type Database = {
       }
       vehicle_checks: {
         Row: {
+          cached_until: string | null
           created_at: string
           created_by_user_id: string | null
           dealer_id: string
-          dvla_data: Json | null
-          dvsa_data: Json | null
-          gvd_data: Json | null
+          dvla_json: Json | null
+          dvla_status: Database["public"]["Enums"]["check_provider_status"]
+          dvsa_json: Json | null
+          dvsa_status: Database["public"]["Enums"]["check_provider_status"]
+          error_message: string | null
+          gvd_json: Json | null
+          gvd_status: Database["public"]["Enums"]["check_provider_status"]
           id: string
+          requested_at: string
+          status: Database["public"]["Enums"]["check_run_status"]
+          summary_data: Json | null
+          updated_at: string
           vrm: string
         }
         Insert: {
+          cached_until?: string | null
           created_at?: string
           created_by_user_id?: string | null
           dealer_id: string
-          dvla_data?: Json | null
-          dvsa_data?: Json | null
-          gvd_data?: Json | null
+          dvla_json?: Json | null
+          dvla_status?: Database["public"]["Enums"]["check_provider_status"]
+          dvsa_json?: Json | null
+          dvsa_status?: Database["public"]["Enums"]["check_provider_status"]
+          error_message?: string | null
+          gvd_json?: Json | null
+          gvd_status?: Database["public"]["Enums"]["check_provider_status"]
           id?: string
+          requested_at?: string
+          status?: Database["public"]["Enums"]["check_run_status"]
+          summary_data?: Json | null
+          updated_at?: string
           vrm: string
         }
         Update: {
+          cached_until?: string | null
           created_at?: string
           created_by_user_id?: string | null
           dealer_id?: string
-          dvla_data?: Json | null
-          dvsa_data?: Json | null
-          gvd_data?: Json | null
+          dvla_json?: Json | null
+          dvla_status?: Database["public"]["Enums"]["check_provider_status"]
+          dvsa_json?: Json | null
+          dvsa_status?: Database["public"]["Enums"]["check_provider_status"]
+          error_message?: string | null
+          gvd_json?: Json | null
+          gvd_status?: Database["public"]["Enums"]["check_provider_status"]
           id?: string
+          requested_at?: string
+          status?: Database["public"]["Enums"]["check_run_status"]
+          summary_data?: Json | null
+          updated_at?: string
           vrm?: string
         }
         Relationships: [
@@ -1540,6 +1567,8 @@ export type Database = {
         | "document_added"
         | "cost_update"
       app_role: "super_admin" | "dealer_admin" | "dealer_user"
+      check_provider_status: "success" | "failed" | "not_run"
+      check_run_status: "success" | "partial" | "failed"
       contact_method: "phone" | "email" | "whatsapp" | "post"
       courtesy_car_status: "available" | "on_loan" | "in_service" | "retired"
       cra_window: "within_30_days" | "day_31_to_6_months" | "over_6_months"
@@ -1746,6 +1775,8 @@ export const Constants = {
         "cost_update",
       ],
       app_role: ["super_admin", "dealer_admin", "dealer_user"],
+      check_provider_status: ["success", "failed", "not_run"],
+      check_run_status: ["success", "partial", "failed"],
       contact_method: ["phone", "email", "whatsapp", "post"],
       courtesy_car_status: ["available", "on_loan", "in_service", "retired"],
       cra_window: ["within_30_days", "day_31_to_6_months", "over_6_months"],
