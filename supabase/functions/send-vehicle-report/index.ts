@@ -42,7 +42,7 @@ serve(async (req) => {
         Authorization: `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: Deno.env.get("EMAIL_FROM") || "DealerDash <reports@dealerdash.co.uk>",
+        from: Deno.env.get("EMAIL_FROM") || "DealerDash <onboarding@resend.dev>",
         to: [to],
         subject: `Vehicle Check Report – ${vrm}`,
         html: reportHtml,
