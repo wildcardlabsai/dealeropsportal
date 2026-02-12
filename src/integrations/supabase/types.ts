@@ -1287,6 +1287,7 @@ export type Database = {
           keys_count: number
           mileage_at_handover: number | null
           notes: string | null
+          salesman_name: string | null
           scheduled_delivery_at: string | null
           signature_image_url: string | null
           signature_mode: string | null
@@ -1312,6 +1313,7 @@ export type Database = {
           keys_count?: number
           mileage_at_handover?: number | null
           notes?: string | null
+          salesman_name?: string | null
           scheduled_delivery_at?: string | null
           signature_image_url?: string | null
           signature_mode?: string | null
@@ -1337,6 +1339,7 @@ export type Database = {
           keys_count?: number
           mileage_at_handover?: number | null
           notes?: string | null
+          salesman_name?: string | null
           scheduled_delivery_at?: string | null
           signature_image_url?: string | null
           signature_mode?: string | null

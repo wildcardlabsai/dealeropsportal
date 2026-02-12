@@ -252,6 +252,12 @@ export default function HandoverDetail() {
               {h.scheduled_delivery_at && <p className="text-xs text-muted-foreground">Scheduled: {format(new Date(h.scheduled_delivery_at), "d MMM yyyy HH:mm")}</p>}
               {h.delivered_at && <p className="text-xs text-muted-foreground">Delivered: {format(new Date(h.delivered_at), "d MMM yyyy HH:mm")}</p>}
             </div>
+            {h.salesman_name && (
+              <div className="p-5 rounded-xl border border-border/50 bg-card/50 space-y-2">
+                <h3 className="text-sm font-semibold">Salesman</h3>
+                <p className="text-sm">{h.salesman_name}</p>
+              </div>
+            )}
             {h.notes && (
               <div className="p-5 rounded-xl border border-border/50 bg-card/50 space-y-2">
                 <h3 className="text-sm font-semibold">Notes</h3>

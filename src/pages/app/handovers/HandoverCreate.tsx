@@ -27,7 +27,7 @@ export default function HandoverCreate() {
     customer_id: "", vehicle_id: "", delivery_type: "collection",
     delivery_address: "", scheduled_delivery_at: "", notes: "",
     mileage_at_handover: "", fuel_level: "full", keys_count: "2",
-    template_id: "",
+    template_id: "", salesman_name: "",
   });
 
   const update = (f: string, v: any) => setForm(prev => ({ ...prev, [f]: v }));
@@ -50,6 +50,7 @@ export default function HandoverCreate() {
         fuel_level: form.fuel_level || null,
         keys_count: parseInt(form.keys_count) || 2,
         staff_user_id: user?.id || null,
+        salesman_name: form.salesman_name || null,
         status: "in_progress",
       });
 
@@ -162,6 +163,14 @@ export default function HandoverCreate() {
               {templates?.map((t: any) => <SelectItem key={t.id} value={t.id}>{t.name} {t.is_default ? "(Default)" : ""}</SelectItem>)}
             </SelectContent>
           </Select>
+        </div>
+
+        <div className="p-6 rounded-xl border border-border/50 bg-card/50 space-y-4">
+          <h3 className="text-sm font-semibold">Salesman</h3>
+          <div>
+            <Label className="text-xs">Salesman Name</Label>
+            <Input value={form.salesman_name} onChange={e => update("salesman_name", e.target.value)} placeholder="Enter salesman name" className="mt-1" />
+          </div>
         </div>
 
         <div className="p-6 rounded-xl border border-border/50 bg-card/50 space-y-4">

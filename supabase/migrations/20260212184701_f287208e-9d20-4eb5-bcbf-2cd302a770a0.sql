@@ -1,0 +1,1 @@
+ALTER TABLE public.handovers ADD COLUMN salesman_name text;

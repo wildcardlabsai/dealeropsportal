@@ -43,7 +43,7 @@ export function useHandover(id: string | undefined) {
       if (!id) return null;
       const { data, error } = await supabase
         .from("handovers")
-        .select("*, customers(first_name, last_name, email, phone, address_line1, city, postcode), vehicles(vrm, make, model, vin, mileage, first_registration_date)")
+        .select("*, customers(first_name, last_name, email, phone, address_line1, city, postcode), vehicles(vrm, make, model, vin, mileage, year)")
         .eq("id", id)
         .single();
       if (error) throw error;
