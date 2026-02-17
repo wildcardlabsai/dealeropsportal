@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -8,7 +8,15 @@ import {
   Lock, Headphones, Globe, Zap, ChevronRight,
   ShieldCheck, Award, TrendingUp
 } from "lucide-react";
-import dashboardPreview from "@/assets/dashboard-preview.png";
+
+/* ─── hero feature carousel ─── */
+
+const heroFeatures = [
+  { icon: Car, title: "Vehicle Management", stat: "2,500+", statLabel: "vehicles tracked", desc: "Stock control, DVLA checks, MOT history" },
+  { icon: Users, title: "Customer CRM", stat: "10k+", statLabel: "customer records", desc: "Profiles, comms logs, consent tracking" },
+  { icon: Wrench, title: "Aftersales", stat: "98%", statLabel: "SLA compliance", desc: "CRA guidance, case management, disputes" },
+  { icon: BarChart3, title: "Reports & KPIs", stat: "50k+", statLabel: "invoices generated", desc: "Staff performance & business insights" },
+];
 
 /* ─── data ─── */
 
@@ -93,6 +101,83 @@ function AnimatedCounter({ value, suffix, label }: { value: number; suffix: stri
   );
 }
 
+/* ─── hero feature showcase ─── */
+
+function HeroFeatureShowcase() {
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActive((prev) => (prev + 1) % heroFeatures.length);
+    }, 3500);
+    return () => clearInterval(timer);
+  }, []);
+
+  const feat = heroFeatures[active];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, delay: 0.3 }}
+      className="mt-16 max-w-3xl mx-auto"
+    >
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 mb-4">
+        {heroFeatures.map((f, i) => (
+          <button
+            key={f.title}
+            onClick={() => setActive(i)}
+            className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-left text-xs font-medium transition-all duration-300 ${
+              i === active
+                ? "bg-primary/15 text-primary border border-primary/30"
+                : "bg-card/50 text-muted-foreground border border-border/50 hover:border-border hover:text-foreground"
+            }`}
+          >
+            <f.icon className="h-3.5 w-3.5 shrink-0" />
+            <span className="hidden sm:inline">{f.title}</span>
+            <span className="sm:hidden">{f.title}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="relative rounded-xl border border-border/50 bg-card/50 p-8 min-h-[140px] overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-0.5 bg-muted/30 rounded-full overflow-hidden">
+          <motion.div
+            key={active}
+            className="h-full bg-primary"
+            initial={{ width: "0%" }}
+            animate={{ width: "100%" }}
+            transition={{ duration: 3.5, ease: "linear" }}
+          />
+        </div>
+
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={active}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3 }}
+            className="flex flex-col sm:flex-row items-start sm:items-center gap-6"
+          >
+            <div className="h-16 w-16 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+              <feat.icon className="h-8 w-8 text-primary" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-foreground mb-1">{feat.title}</h3>
+              <p className="text-sm text-muted-foreground">{feat.desc}</p>
+            </div>
+            <div className="text-right shrink-0">
+              <div className="text-2xl font-bold text-foreground">{feat.stat}</div>
+              <p className="text-xs text-muted-foreground">{feat.statLabel}</p>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+}
+
 /* ─── page ─── */
 
 export default function Index() {
@@ -144,23 +229,8 @@ export default function Index() {
             <p className="text-xs text-muted-foreground mt-4">No credit card required · 14-day free trial · Cancel anytime</p>
           </motion.div>
 
-          {/* Dashboard Screenshot */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="mt-16 max-w-5xl mx-auto"
-          >
-            <div className="relative rounded-xl overflow-hidden border border-border/50 shadow-2xl shadow-primary/5">
-              <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent z-10 pointer-events-none" />
-              <img
-                src={dashboardPreview}
-                alt="DealerOps dashboard showing vehicle management, KPIs, and stock overview"
-                className="w-full h-auto"
-                loading="eager"
-              />
-            </div>
-          </motion.div>
+          {/* Animated Feature Showcase */}
+          <HeroFeatureShowcase />
         </div>
       </section>
 
