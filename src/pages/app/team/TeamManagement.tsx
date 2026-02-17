@@ -89,12 +89,12 @@ export default function TeamManagement() {
   const updateRole = useMutation({
     mutationFn: async ({ userId, role }: { userId: string; role: string }) => {
       if (!dealerId) throw new Error("No dealer");
-      await supabase.from("user_roles").delete().eq("user_id", userId).eq("dealer_id", dealerId);
-      const { error } = await supabase.from("user_roles").insert({
-        user_id: userId,
-        dealer_id: dealerId,
-        role: role as any,
-      });
+      // Use UPDATE to avoid race condition from delete+insert pattern
+      const { error } = await supabase
+        .from("user_roles")
+        .update({ role: role as any })
+        .eq("user_id", userId)
+        .eq("dealer_id", dealerId);
       if (error) throw error;
     },
     onSuccess: () => {
