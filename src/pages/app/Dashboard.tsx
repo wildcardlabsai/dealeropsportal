@@ -29,7 +29,7 @@ function useDashboardStats() {
         supabase.from("vehicles").select("id", { count: "exact", head: true }).eq("status", "in_stock"),
         supabase.from("leads").select("id", { count: "exact", head: true }).in("status", ["new", "contacted", "viewing", "negotiating"]),
         supabase.from("invoices").select("id", { count: "exact", head: true }),
-        supabase.from("aftersales").select("id", { count: "exact", head: true }).in("status", ["open", "in_progress", "awaiting_parts"]),
+        supabase.from("aftersales_cases").select("id", { count: "exact", head: true }).in("status", ["new", "investigating", "in_repair", "awaiting_customer", "awaiting_garage"]),
         supabase.from("warranties").select("id", { count: "exact", head: true }).eq("status", "active"),
       ]);
       return {
@@ -57,8 +57,8 @@ function useMonthlyRevenue() {
       const lastEnd = endOfMonth(subMonths(now, 1)).toISOString();
 
       const [thisMonth, lastMonth] = await Promise.all([
-        supabase.from("invoices").select("total").gte("invoice_date", thisStart).lte("invoice_date", thisEnd),
-        supabase.from("invoices").select("total").gte("invoice_date", lastStart).lte("invoice_date", lastEnd),
+        supabase.from("invoices").select("total").in("status", ["sent", "paid"]).gte("created_at", thisStart).lte("created_at", thisEnd),
+        supabase.from("invoices").select("total").in("status", ["sent", "paid"]).gte("created_at", lastStart).lte("created_at", lastEnd),
       ]);
 
       const thisTotal = (thisMonth.data || []).reduce((s, i) => s + (i.total || 0), 0);
@@ -138,6 +138,39 @@ function useTodayTasks() {
   });
 }
 
+const ACTION_LABELS: Record<string, string> = {
+  cra_case_created: "CRA Shield case created",
+  self_signup: "New dealer signup",
+  SELF_SIGNUP: "New dealer signup",
+  DEALER_CREATED: "Dealer account created",
+  WELCOME_EMAIL_SENT: "Welcome email sent",
+  invoice_created: "Invoice created",
+  invoice_issued: "Invoice issued",
+  invoice_paid: "Invoice marked paid",
+  customer_created: "New customer added",
+  vehicle_created: "Vehicle added to stock",
+  vehicle_sold: "Vehicle sold",
+  handover_created: "Handover created",
+  handover_completed: "Handover completed",
+  warranty_created: "Warranty created",
+  lead_created: "New lead logged",
+  lead_won: "Lead won",
+  upgrade_approved: "Subscription upgrade approved",
+  upgrade_declined: "Subscription upgrade declined",
+};
+
+const ENTITY_LABELS: Record<string, string> = {
+  cra_case: "CRA Case",
+  dealer: "Dealer",
+  invoice: "Invoice",
+  customer: "Customer",
+  vehicle: "Vehicle",
+  handover: "Handover",
+  warranty: "Warranty",
+  lead: "Lead",
+  upgrade_request: "Upgrade Request",
+};
+
 function useRecentActivity() {
   const { data: dealerId } = useUserDealerId();
   return useQuery({
@@ -145,9 +178,9 @@ function useRecentActivity() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("audit_logs")
-        .select("id, action_type, entity_type, entity_id, created_at")
+        .select("id, action_type, entity_type, entity_id, created_at, summary")
         .order("created_at", { ascending: false })
-        .limit(5);
+        .limit(8);
       if (error) throw error;
       return data;
     },
@@ -162,9 +195,9 @@ function useRecentSales() {
     queryFn: async () => {
       const { data } = await supabase
         .from("invoices")
-        .select("id, invoice_number, total, invoice_date, customers:customer_id(first_name, last_name)")
+        .select("id, invoice_number, total, invoice_date, created_at, customers:customer_id(first_name, last_name)")
         .in("status", ["sent", "paid"])
-        .order("invoice_date", { ascending: false })
+        .order("created_at", { ascending: false })
         .limit(5);
       return data || [];
     },
@@ -517,18 +550,20 @@ export default function Dashboard() {
           <h3 className="text-sm font-semibold mb-4">Recent Activity</h3>
           {recentActivity?.length ? (
             <div className="relative pl-4 border-l-2 border-border/50 space-y-4">
-              {recentActivity.map((log) => (
-                <div key={log.id} className="relative">
-                  <div className="absolute -left-[21px] top-1 h-3 w-3 rounded-full bg-primary/20 border-2 border-primary" />
-                  <div>
-                    <p className="text-sm">
-                      <span className="font-medium text-primary">{log.action_type}</span>
-                      {log.entity_type && <span className="text-muted-foreground"> · {log.entity_type}</span>}
-                    </p>
-                    <p className="text-xs text-muted-foreground">{format(new Date(log.created_at), "d MMM HH:mm")}</p>
+              {recentActivity.map((log) => {
+                const label = ACTION_LABELS[log.action_type] || log.action_type.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+                const entityLabel = log.entity_type ? (ENTITY_LABELS[log.entity_type] || log.entity_type.replace(/_/g, " ")) : null;
+                return (
+                  <div key={log.id} className="relative">
+                    <div className="absolute -left-[21px] top-1 h-3 w-3 rounded-full bg-primary/20 border-2 border-primary" />
+                    <div>
+                      <p className="text-sm font-medium">{label}</p>
+                      {entityLabel && <p className="text-xs text-muted-foreground">{entityLabel}</p>}
+                      <p className="text-xs text-muted-foreground">{format(new Date(log.created_at), "d MMM HH:mm")}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <div className="flex items-center justify-center h-32 text-sm text-muted-foreground">No recent activity yet</div>

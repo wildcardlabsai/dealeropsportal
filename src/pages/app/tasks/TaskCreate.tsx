@@ -18,7 +18,7 @@ export default function TaskCreate() {
   const { data: dealerId } = useUserDealerId();
   const { user } = useAuth();
   const [form, setForm] = useState({
-    title: "", description: "", priority: "medium" as const, due_date: "",
+    title: "", description: "", priority: "medium" as const, due_date: "", attention_of: "",
   });
 
   const update = (field: string, value: string) => setForm((prev) => ({ ...prev, [field]: value }));
@@ -26,11 +26,15 @@ export default function TaskCreate() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!dealerId) { toast.error("No dealer account linked"); return; }
+    const fullDescription = [
+      form.attention_of ? `FOR ATTENTION OF: ${form.attention_of}` : "",
+      form.description,
+    ].filter(Boolean).join("\n\n");
     try {
       await create.mutateAsync({
         dealer_id: dealerId,
         title: form.title,
-        description: form.description || null,
+        description: fullDescription || null,
         priority: form.priority,
         due_date: form.due_date || null,
         created_by_user_id: user?.id || null,
@@ -55,6 +59,18 @@ export default function TaskCreate() {
       </div>
 
       <form onSubmit={handleSubmit} className="max-w-lg space-y-6">
+        {/* Attention of — prominent, at the top */}
+        <div className="p-5 rounded-xl border-2 border-primary/30 bg-primary/5 space-y-2">
+          <Label className="text-sm font-semibold text-primary">For the Attention of</Label>
+          <p className="text-xs text-muted-foreground">Who is this task for?</p>
+          <input
+            value={form.attention_of}
+            onChange={(e) => update("attention_of", e.target.value)}
+            placeholder="e.g. John Smith, Service Team, All Staff..."
+            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+        </div>
+
         <div className="p-6 rounded-xl border border-border/50 bg-card/50 space-y-4">
           <div>
             <Label className="text-xs">Title *</Label>

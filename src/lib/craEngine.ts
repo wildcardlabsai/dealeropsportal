@@ -117,23 +117,36 @@ export function runCRAEngine(inputs: CRAInputs): CRAOutputs {
   else if (score <= -2) risk_rating = "green";
   else risk_rating = "amber";
 
+  const isWearAndTear = inputs.fault_category === "wear_and_tear";
+
   // ── Next steps ──
   const steps: string[] = [
     "Acknowledge the complaint in writing within 24 hours.",
-    "Book a diagnostic inspection at the earliest opportunity.",
   ];
-  if (window === "within_30_days") {
-    steps.push("⚠️ Within 30-day window — prioritise rapid response and documentation.");
-    steps.push("Ensure all pre-sale evidence (PDI, photos, handover) is collated immediately.");
+
+  if (isWearAndTear) {
+    steps.push("Explain to the customer that the reported issue appears to be consistent with normal wear and tear, which is not covered under the Consumer Rights Act 2015.");
+    steps.push("Provide clear written communication outlining why the fault is considered wear and tear.");
+    steps.push("Advise the customer they may seek an independent inspection at a garage of their choosing if they wish to challenge this assessment.");
+    if (!inputs.diagnostic_report_present) {
+      steps.push("Consider commissioning a diagnostic report to support the wear-and-tear assessment if the customer disputes it.");
+    }
+  } else {
+    steps.push("Advise the customer to arrange an independent inspection at a garage of their choice, or offer to inspect the vehicle at the dealership.");
+    if (window === "within_30_days") {
+      steps.push("⚠️ Within 30-day window — prioritise rapid response and documentation.");
+      steps.push("Ensure all pre-sale evidence (PDI, photos, handover) is collated immediately.");
+    }
+    if (window === "30_days_to_6_months") {
+      steps.push("Focus on a reasonable repair pathway with documented diagnostic findings.");
+      steps.push("Obtain an independent diagnostic report if the cause is disputed.");
+    }
+    if (window === "over_6_months") {
+      steps.push("Request evidence from customer that fault was present at point of sale.");
+      steps.push("Consider usage patterns and normal wear in your assessment.");
+    }
   }
-  if (window === "30_days_to_6_months") {
-    steps.push("Focus on a reasonable repair pathway with documented diagnostic findings.");
-    steps.push("Diagnostic-led decision-making — obtain independent report if needed.");
-  }
-  if (window === "over_6_months") {
-    steps.push("Request evidence from customer that fault was present at point of sale.");
-    steps.push("Consider usage patterns and normal wear in your assessment.");
-  }
+
   if (inputs.sale_type === "distance") {
     steps.push("📋 Distance sale — review 14-day cancellation right compliance.");
     steps.push("Ensure all required pre-contract information was provided.");

@@ -106,13 +106,16 @@ export default function TeamManagement() {
 
   const toggleActive = useMutation({
     mutationFn: async ({ userId, isActive }: { userId: string; isActive: boolean }) => {
-      const { error } = await supabase.from("profiles").update({ is_active: !isActive }).eq("id", userId);
+      const newStatus = !isActive;
+      const { error } = await supabase.from("profiles").update({ is_active: newStatus }).eq("id", userId);
       if (error) throw error;
+      return newStatus;
     },
-    onSuccess: () => {
+    onSuccess: (newStatus) => {
       queryClient.invalidateQueries({ queryKey: ["team-members"] });
-      toast.success("User status updated");
+      toast.success(newStatus ? "User activated" : "User deactivated");
     },
+    onError: (err: any) => toast.error(err.message),
   });
 
   const togglePermission = useMutation({

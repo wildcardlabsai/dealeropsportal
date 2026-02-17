@@ -17,6 +17,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { runCRAEngine, CRAInputs } from "@/lib/craEngine";
 import { logAuditEvent } from "@/hooks/useAuditLogs";
 import { toast } from "sonner";
+import VrmLookup, { VrmLookupResult } from "@/components/app/VrmLookup";
 
 const FAULT_CATEGORIES = [
   "engine", "gearbox", "electrical", "brakes", "suspension", "steering",
@@ -37,7 +38,6 @@ export default function CRAShieldCreate() {
     issue_reported_date: new Date().toISOString().split("T")[0],
     mileage_at_sale: "",
     mileage_at_issue: "",
-    vehicle_first_reg_date: "",
     vehicle_make: "",
     vehicle_model: "",
     vehicle_registration: "",
@@ -56,6 +56,15 @@ export default function CRAShieldCreate() {
   });
 
   const set = (key: string, value: any) => setForm((p) => ({ ...p, [key]: value }));
+
+  const handleVrmResult = (result: VrmLookupResult) => {
+    setForm((p) => ({
+      ...p,
+      vehicle_registration: result.vrm || p.vehicle_registration,
+      vehicle_make: result.make || p.vehicle_make,
+      vehicle_model: result.model || p.vehicle_model,
+    }));
+  };
 
   const handleSubmit = async () => {
     if (!dealerId || !user) return;
@@ -78,7 +87,7 @@ export default function CRAShieldCreate() {
       issue_reported_date: form.issue_reported_date,
       mileage_at_sale: form.mileage_at_sale ? Number(form.mileage_at_sale) : null,
       mileage_at_issue: form.mileage_at_issue ? Number(form.mileage_at_issue) : null,
-      vehicle_first_reg_date: form.vehicle_first_reg_date || null,
+      vehicle_first_reg_date: null,
       vehicle_make: form.vehicle_make || null,
       vehicle_model: form.vehicle_model || null,
       vehicle_registration: form.vehicle_registration || null,
@@ -115,11 +124,12 @@ export default function CRAShieldCreate() {
       const baseTasks = [
         { title: `CRA ${(created as any).case_number}: Send complaint acknowledgement`, priority: "high" as const },
       ];
-      if (!form.diagnostic_report_present) {
-        baseTasks.push({ title: `CRA ${(created as any).case_number}: Request diagnostic report`, priority: "high" as const });
-      }
       if (!form.pdi_present) {
         baseTasks.push({ title: `CRA ${(created as any).case_number}: Confirm PDI evidence`, priority: "high" as const });
+      }
+      // Only request diagnostic if NOT wear and tear
+      if (!form.diagnostic_report_present && form.fault_category !== "wear_and_tear") {
+        baseTasks.push({ title: `CRA ${(created as any).case_number}: Request diagnostic report`, priority: "high" as const });
       }
 
       for (const t of baseTasks) {
@@ -169,9 +179,31 @@ export default function CRAShieldCreate() {
       </h1>
 
       <div className="space-y-6">
-        {/* Sale & Vehicle */}
+        {/* Vehicle Lookup */}
         <Card className="glass">
-          <CardHeader><CardTitle className="text-sm">Sale & Vehicle Details</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-sm">Vehicle Lookup</CardTitle></CardHeader>
+          <CardContent className="space-y-4">
+            <VrmLookup
+              value={form.vehicle_registration}
+              onChange={(v) => set("vehicle_registration", v)}
+              onResult={handleVrmResult}
+            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-xs">Make (auto-filled)</Label>
+                <Input value={form.vehicle_make} onChange={(e) => set("vehicle_make", e.target.value)} placeholder="e.g. Ford" className="mt-1" />
+              </div>
+              <div>
+                <Label className="text-xs">Model (auto-filled)</Label>
+                <Input value={form.vehicle_model} onChange={(e) => set("vehicle_model", e.target.value)} placeholder="e.g. Focus" className="mt-1" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Sale & Dates */}
+        <Card className="glass">
+          <CardHeader><CardTitle className="text-sm">Sale Details</CardTitle></CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label>Sale Date *</Label>
@@ -182,22 +214,6 @@ export default function CRAShieldCreate() {
               <Input type="date" value={form.issue_reported_date} onChange={(e) => set("issue_reported_date", e.target.value)} />
             </div>
             <div>
-              <Label>Vehicle Registration</Label>
-              <Input value={form.vehicle_registration} onChange={(e) => set("vehicle_registration", e.target.value.toUpperCase())} placeholder="AB12 CDE" />
-            </div>
-            <div>
-              <Label>Vehicle Make</Label>
-              <Input value={form.vehicle_make} onChange={(e) => set("vehicle_make", e.target.value)} />
-            </div>
-            <div>
-              <Label>Vehicle Model</Label>
-              <Input value={form.vehicle_model} onChange={(e) => set("vehicle_model", e.target.value)} />
-            </div>
-            <div>
-              <Label>First Registration Date</Label>
-              <Input type="date" value={form.vehicle_first_reg_date} onChange={(e) => set("vehicle_first_reg_date", e.target.value)} />
-            </div>
-            <div>
               <Label>Mileage at Sale</Label>
               <Input type="number" value={form.mileage_at_sale} onChange={(e) => set("mileage_at_sale", e.target.value)} />
             </div>
@@ -205,22 +221,17 @@ export default function CRAShieldCreate() {
               <Label>Mileage at Issue</Label>
               <Input type="number" value={form.mileage_at_issue} onChange={(e) => set("mileage_at_issue", e.target.value)} />
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Sale Context */}
-        <Card className="glass">
-          <CardHeader><CardTitle className="text-sm">Sale Context</CardTitle></CardHeader>
-          <CardContent>
-            <Label>Sale Type</Label>
-            <Select value={form.sale_type} onValueChange={(v) => set("sale_type", v)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {SALE_TYPES.map((t) => (
-                  <SelectItem key={t} value={t}>{t.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="md:col-span-2">
+              <Label>Sale Type</Label>
+              <Select value={form.sale_type} onValueChange={(v) => set("sale_type", v)}>
+                <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {SALE_TYPES.map((t) => (
+                    <SelectItem key={t} value={t}>{t.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </CardContent>
         </Card>
 
