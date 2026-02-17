@@ -72,9 +72,14 @@ export function Footer() {
           <p className="text-xs text-muted-foreground">
             © 2026 DealerOps. All rights reserved.
           </p>
-          <p className="text-xs text-muted-foreground">
-            Built by <span className="text-foreground font-medium">Wildcard Labs</span>
-          </p>
+          <div className="flex items-center gap-4">
+            <Link to="/app" className="text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors">
+              Admin Panel
+            </Link>
+            <p className="text-xs text-muted-foreground">
+              Built by <span className="text-foreground font-medium">Wildcard Labs</span>
+            </p>
+          </div>
         </div>
       </div>
     </footer>
