@@ -108,21 +108,24 @@ Built by Wildcard Labs
 
     let emailStatus = "simulated";
     const resendKey = Deno.env.get("RESEND_API_KEY");
-    if (resendKey && resendKey !== "re_placeholder") {
-      try {
-        const res = await fetch("https://api.resend.com/emails", {
-          method: "POST",
-          headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
-          body: JSON.stringify({
-            from: "DealerOps <noreply@dealerops.uk>",
-            to: [adminEmail],
-            subject: "DealerOps – Your password has been reset",
-            text: emailBody,
-          }),
-        });
-        if (res.ok) emailStatus = "sent";
-      } catch (_) { /* fall through */ }
+    if (!resendKey) throw new Error("RESEND_API_KEY secret is not configured");
+
+    const resendRes = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        from: "DealerOps <noreply@dealerops.uk>",
+        to: [adminEmail],
+        subject: "DealerOps – Your password has been reset",
+        text: emailBody,
+      }),
+    });
+
+    if (!resendRes.ok) {
+      const errBody = await resendRes.text();
+      throw new Error(`Resend API error ${resendRes.status}: ${errBody}`);
     }
+    emailStatus = "sent";
 
     await supabaseAdmin.from("email_outbox").insert({
       dealer_id,
