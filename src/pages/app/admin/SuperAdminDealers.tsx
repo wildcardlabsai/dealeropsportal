@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { Building2, Plus, Search, Mail, Eye, KeyRound, Clock } from "lucide-react";
+import { Building2, Plus, Search, Mail, Eye, KeyRound, Clock, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -129,6 +129,34 @@ export default function SuperAdminDealers() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["email-outbox"] });
       toast.success(data?.message || "Welcome email resent with new temporary password");
+    },
+    onError: (err: any) => toast.error(`Failed: ${err.message}`),
+  });
+
+  const resendEmailOnly = useMutation({
+    mutationFn: async (dealerId: string) => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("You are not logged in. Please refresh and try again.");
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/onboard-dealer`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${session.access_token}`,
+            "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: JSON.stringify({ resend_email_only_dealer_id: dealerId }),
+        }
+      );
+      const json = await response.json();
+      if (!response.ok) throw new Error(json?.error || `Error ${response.status}`);
+      return json;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["email-outbox"] });
+      toast.success(data?.message || "Welcome email resent (password unchanged)");
     },
     onError: (err: any) => toast.error(`Failed: ${err.message}`),
   });
@@ -302,8 +330,12 @@ export default function SuperAdminDealers() {
                         </td>
                         <td className="p-3">
                           <div className="flex items-center gap-1.5 justify-end flex-wrap">
-                            {/* Resend welcome email */}
-                            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => resendWelcome.mutate(d.id)} title="Resend welcome email with new temp password">
+                            {/* Resend welcome email only (no password reset) */}
+                            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => resendEmailOnly.mutate(d.id)} title="Resend welcome email (keep current password)">
+                              <Send className="h-3.5 w-3.5" />
+                            </Button>
+                            {/* Resend welcome email with new temp password */}
+                            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => resendWelcome.mutate(d.id)} title="Resend welcome email with NEW temp password">
                               <Mail className="h-3.5 w-3.5" />
                             </Button>
                             {/* Reset password */}

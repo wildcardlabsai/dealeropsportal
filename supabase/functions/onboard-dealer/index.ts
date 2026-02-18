@@ -47,6 +47,77 @@ Deno.serve(async (req) => {
 
     const body = await req.json();
 
+    // RESEND EMAIL ONLY mode — sends welcome email without touching the password
+    if (body.resend_email_only_dealer_id) {
+      const dealerId = body.resend_email_only_dealer_id;
+      console.log("[EMAIL_ONLY] Starting for dealer:", dealerId);
+
+      const { data: dealer, error: dealerFetchErr } = await supabaseAdmin.from("dealers").select("*").eq("id", dealerId).single();
+      if (dealerFetchErr) throw new Error(`Dealer fetch error: ${dealerFetchErr.message}`);
+      if (!dealer) throw new Error("Dealer not found");
+      console.log("[EMAIL_ONLY] Dealer found:", dealer.name);
+
+      const { data: adminRole, error: adminRoleErr } = await supabaseAdmin
+        .from("user_roles")
+        .select("user_id")
+        .eq("dealer_id", dealer.id)
+        .eq("role", "dealer_admin")
+        .limit(1)
+        .single();
+      if (adminRoleErr) throw new Error(`Admin role lookup error: ${adminRoleErr.message}`);
+      if (!adminRole) throw new Error("No dealer_admin user found for this dealer");
+
+      const { data: adminAuthData, error: authLookupErr } = await supabaseAdmin.auth.admin.getUserById(adminRole.user_id);
+      if (authLookupErr) throw new Error(`Auth user lookup error: ${authLookupErr.message}`);
+      if (!adminAuthData?.user?.email) throw new Error("Could not retrieve admin email from auth");
+      const toEmail = adminAuthData.user.email;
+      console.log("[EMAIL_ONLY] Sending to email:", toEmail);
+
+      const emailBody = buildWelcomeEmailNoPassword(dealer.name, toEmail, "dealerops.uk/login", dealer.status === "trial", dealer.trial_ends_at);
+
+      const resendKey = Deno.env.get("RESEND_API_KEY");
+      if (!resendKey) throw new Error("RESEND_API_KEY secret is not configured");
+
+      const resendRes = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          from: "DealerOps <noreply@dealerops.uk>",
+          to: [toEmail],
+          subject: "Welcome to DealerOps – Your account details",
+          text: emailBody,
+        }),
+      });
+
+      if (!resendRes.ok) {
+        const errBody = await resendRes.text();
+        throw new Error(`Resend API error ${resendRes.status}: ${errBody}`);
+      }
+      console.log("[EMAIL_ONLY] Email sent successfully");
+
+      const { error: outboxErr } = await supabaseAdmin.from("email_outbox").insert({
+        dealer_id: dealer.id,
+        to_email: toEmail,
+        subject: "Welcome to DealerOps – Your account details",
+        body_text: emailBody,
+        status: "sent",
+        sent_at: new Date().toISOString(),
+      });
+      if (outboxErr) console.warn("[EMAIL_ONLY] email_outbox insert warning:", outboxErr.message);
+
+      const { error: eventErr } = await supabaseAdmin.from("dealer_onboarding_events").insert({
+        dealer_id: dealer.id,
+        created_by_superadmin_user_id: caller.id,
+        event_type: "WELCOME_EMAIL_SENT",
+        payload_json: { resend_email_only: true, status: "sent" },
+      });
+      if (eventErr) console.warn("[EMAIL_ONLY] onboarding_event insert warning:", eventErr.message);
+
+      return new Response(JSON.stringify({ message: `Welcome email (no password reset) sent to ${toEmail}` }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // RESEND mode — generates a new temp password and emails it
     if (body.resend_dealer_id) {
       console.log("[RESEND] Starting resend for dealer:", body.resend_dealer_id);
@@ -324,6 +395,51 @@ Login Email: ${loginEmail}
 Temporary Password: ${tempPassword || "(contact support)"}
 
 IMPORTANT: Please log in and change your password immediately via Settings > Change Password.
+${trialNote}
+Getting Started:
+----------------
+1. Log in at https://${loginUrl}
+2. Change your password via Settings > Change Password
+3. Add your team members under Settings > Team
+4. Add your first customer and vehicle
+5. Run a vehicle check
+6. Create your first invoice
+
+If you have any issues, reply to this email or use the Support tab in the platform. We can also arrange free training for your team.
+
+Best regards,
+The DealerOps Team
+Built by Wildcard Labs
+
+---
+This email was sent by DealerOps. If you did not expect this email, please contact support@dealerops.uk.
+`.trim();
+}
+
+function buildWelcomeEmailNoPassword(
+  dealerName: string,
+  loginEmail: string,
+  loginUrl: string,
+  isTrial: boolean,
+  trialEndsAt: string | null,
+): string {
+  const trialNote = isTrial && trialEndsAt
+    ? `\nTrial Period:\n-------------\nYour 14-day free trial ends on ${new Date(trialEndsAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}.\nTo continue using DealerOps after the trial, please upgrade to a full plan via Settings > Billing.\n`
+    : "";
+
+  return `
+Welcome to DealerOps!
+${"=".repeat(40)}
+
+Hi there,
+
+We're excited to welcome ${dealerName} to DealerOps – your all-in-one dealership management platform.
+
+Your Login Details:
+-------------------
+Portal URL: https://${loginUrl}
+Login Email: ${loginEmail}
+Password: Please use the password you were originally provided. If you have forgotten it, click "Forgot Password" on the login page to reset it via email.
 ${trialNote}
 Getting Started:
 ----------------
