@@ -66,16 +66,14 @@ export function DealerAIChat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const { toast } = useToast();
 
   // Auto-scroll to bottom on new messages
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    scrollEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isStreaming]);
 
   // Focus textarea when opened
@@ -323,7 +321,7 @@ export function DealerAIChat() {
           {/* Messages */}
           <div className="flex-1 overflow-hidden">
             <ScrollArea className="h-full">
-              <div ref={scrollRef} className="p-4 space-y-4">
+              <div className="p-4 space-y-4">
                 {isEmpty ? (
                   /* Welcome state */
                   <div className="flex flex-col items-center text-center pt-4 pb-2">
@@ -383,7 +381,8 @@ export function DealerAIChat() {
                   ))
                 )}
 
-                {/* Thinking indicator when streaming but assistant bubble already added */}
+                {/* Scroll anchor */}
+                <div ref={scrollEndRef} />
               </div>
             </ScrollArea>
           </div>
