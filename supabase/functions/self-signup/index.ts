@@ -171,6 +171,61 @@ Deno.serve(async (req) => {
       actor_role: "dealer_admin",
     });
 
+    // 9. Send welcome email with login details
+    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+    if (RESEND_API_KEY) {
+      const loginUrl = "https://dealeropsportal.lovable.app/login";
+      const welcomeHtml = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background-color:#0a0a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <div style="max-width:600px;margin:0 auto;padding:40px 20px;">
+    <div style="text-align:center;margin-bottom:32px;">
+      <div style="display:inline-block;background:#6d28d9;border-radius:12px;padding:12px 16px;">
+        <span style="color:#fff;font-weight:800;font-size:20px;">D</span>
+      </div>
+      <h1 style="color:#fff;margin:16px 0 0;font-size:24px;">Dealer<span style="color:#6d28d9;">Ops</span></h1>
+    </div>
+    <div style="background:#111127;border:1px solid #1e1e3a;border-radius:16px;padding:40px 32px;text-align:center;">
+      <h2 style="color:#fff;font-size:22px;margin:0 0 8px;">Welcome to DealerOps, ${first_name}!</h2>
+      <p style="color:#9ca3af;font-size:14px;line-height:1.6;margin:0 0 24px;">
+        Your 14-day free trial is now active for <strong style="color:#fff;">${dealership_name}</strong>. Here are your login details:
+      </p>
+      <div style="background:#0a0a1a;border-radius:12px;padding:24px;margin:24px 0;text-align:left;">
+        <p style="color:#6d28d9;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin:0 0 16px;">Your Login Details</p>
+        <table style="width:100%;" cellpadding="0" cellspacing="0">
+          <tr><td style="padding:8px 0;color:#9ca3af;font-size:13px;width:80px;">Email:</td><td style="padding:8px 0;color:#fff;font-size:13px;font-weight:600;">${email}</td></tr>
+          <tr><td style="padding:8px 0;color:#9ca3af;font-size:13px;">Password:</td><td style="padding:8px 0;color:#fff;font-size:13px;font-weight:600;">The password you set during signup</td></tr>
+        </table>
+      </div>
+      <a href="${loginUrl}" style="display:inline-block;background:#6d28d9;color:#fff;text-decoration:none;padding:14px 32px;border-radius:10px;font-weight:600;font-size:14px;margin-top:8px;">Log In to DealerOps</a>
+      <p style="color:#6b7280;font-size:12px;margin:24px 0 0;">
+        Your trial ends on ${new Date(trialEndsAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}. No credit card required.
+      </p>
+    </div>
+    <p style="text-align:center;color:#4b5563;font-size:11px;margin-top:32px;">© ${new Date().getFullYear()} DealerOps. All rights reserved.</p>
+  </div>
+</body>
+</html>`;
+
+      try {
+        await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${RESEND_API_KEY}` },
+          body: JSON.stringify({
+            from: "DealerOps <onboarding@resend.dev>",
+            to: [email],
+            subject: `Welcome to DealerOps – Your 14-day trial is active!`,
+            html: welcomeHtml,
+          }),
+        });
+        logStep("Welcome email sent", { email });
+      } catch (emailErr: any) {
+        logStep("Welcome email failed (non-blocking)", { error: emailErr.message });
+      }
+    }
+
     logStep("Signup complete", { dealerId: dealer.id, userId: authUser.user.id });
 
     return new Response(JSON.stringify({

@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { Building2, Plus, Search, Mail, Eye, KeyRound, Clock, Send, Lock } from "lucide-react";
+import { Building2, Plus, Search, Mail, Eye, KeyRound, Clock, Send, Lock, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -235,6 +235,33 @@ export default function SuperAdminDealers() {
       setSetPasswordDialog(null);
       setNewPassword("");
       setNotifyDealer(true);
+    },
+    onError: (err: any) => toast.error(`Failed: ${err.message}`),
+  });
+
+  const deleteDealer = useMutation({
+    mutationFn: async (dealerId: string) => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("You are not logged in. Please refresh and try again.");
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-dealer`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${session.access_token}`,
+            "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: JSON.stringify({ dealer_id: dealerId }),
+        }
+      );
+      const json = await response.json();
+      if (!response.ok) throw new Error(json?.error || `Error ${response.status}`);
+      return json;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["admin-dealers"] });
+      toast.success(data?.message || "Dealer deleted successfully");
     },
     onError: (err: any) => toast.error(`Failed: ${err.message}`),
   });
@@ -527,6 +554,31 @@ export default function SuperAdminDealers() {
                                 ))}
                               </SelectContent>
                             </Select>
+                            {/* Delete dealer */}
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-destructive hover:text-destructive" title="Delete dealer permanently">
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Permanently Delete {d.name}?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This will permanently delete this dealership and ALL associated data including customers, vehicles, invoices, leads, users, and everything else. This action cannot be undone.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                    onClick={() => deleteDealer.mutate(d.id)}
+                                  >
+                                    Delete Permanently
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                           </div>
                         </td>
                       </tr>

@@ -23,6 +23,7 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<Mode>(initialMode);
@@ -49,6 +50,10 @@ export default function Login() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("self-signup", {
@@ -191,6 +196,18 @@ export default function Login() {
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
+              </div>
+            )}
+
+            {mode === "signup" && (
+              <div>
+                <Label htmlFor="confirmPassword" className="text-xs">Confirm Password</Label>
+                <div className="relative mt-1">
+                  <Input id="confirmPassword" type={showPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={8} placeholder="Re-enter your password" />
+                </div>
+                {confirmPassword && password !== confirmPassword && (
+                  <p className="text-xs text-destructive mt-1">Passwords do not match</p>
+                )}
               </div>
             )}
 

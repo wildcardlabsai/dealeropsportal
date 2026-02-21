@@ -26,3 +26,6 @@ verify_jwt = false
 
 [functions.seed-demo]
 verify_jwt = false
+
+[functions.delete-dealer]
+verify_jwt = false
