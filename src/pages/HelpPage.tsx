@@ -120,12 +120,13 @@ export default function HelpPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero */}
-      <div className="border-b border-border/50 bg-gradient-to-b from-primary/5 to-transparent">
-        <div className="max-w-4xl mx-auto px-4 py-16 text-center">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-4">
-            <BookOpen className="h-6 w-6 text-primary" />
+      <div className="border-b border-border/30 bg-gradient-to-b from-primary/5 to-transparent">
+        <div className="max-w-4xl mx-auto px-4 py-20 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/5 text-xs text-primary mb-8">
+            <BookOpen className="h-3.5 w-3.5" />
+            Self-service documentation
           </div>
-          <h1 className="text-3xl font-bold text-foreground mb-3">DealerOps Knowledge Base</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">DealerOps Knowledge Base</h1>
           <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
             Find answers about every feature — from invoicing and CRA Shield to GDPR compliance and team management.
           </p>

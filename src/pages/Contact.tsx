@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-import { Mail, Phone, Clock, MapPin, ArrowRight } from "lucide-react";
+import { Mail, Phone, Clock, MapPin, ArrowRight, MessageSquare } from "lucide-react";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -26,7 +26,6 @@ const contactInfo = [
 
 export default function Contact() {
   const [loading, setLoading] = useState(false);
-  
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -53,7 +52,6 @@ export default function Contact() {
 
       if (error) throw error;
 
-      // Fire confirmation email
       supabase.functions.invoke("send-demo-confirmation", {
         body: { name: firstName, email, dealership: dealership || "Not specified" },
       });
@@ -79,6 +77,10 @@ export default function Contact() {
             transition={{ duration: 0.7 }}
             className="text-center max-w-2xl mx-auto"
           >
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/5 text-xs text-primary mb-8">
+              <MessageSquare className="h-3.5 w-3.5" />
+              We typically respond within 4 hours
+            </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               Get in <span className="text-gradient">touch</span>
             </h1>
@@ -90,7 +92,7 @@ export default function Contact() {
       </section>
 
       {/* Two-column layout */}
-      <section className="pb-24">
+      <section className="pb-28">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-12">
             {/* Left — info */}
@@ -100,7 +102,7 @@ export default function Contact() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
               >
-                <h2 className="text-xl font-bold mb-6">Contact details</h2>
+                <h2 className="text-xl font-bold mb-8">Contact details</h2>
                 <div className="space-y-5 mb-10">
                   {contactInfo.map((item, i) => (
                     <motion.div
@@ -111,34 +113,27 @@ export default function Contact() {
                       variants={fadeUp}
                       className="flex items-start gap-3"
                     >
-                      <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                      <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                         <item.icon className="h-4 w-4 text-primary" />
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground font-medium">{item.label}</p>
-                        <p className="text-sm text-foreground">{item.value}</p>
+                        <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wide">{item.label}</p>
+                        <p className="text-sm text-foreground mt-0.5">{item.value}</p>
                       </div>
                     </motion.div>
                   ))}
                 </div>
 
-                <div className="p-5 rounded-xl border border-border/50 bg-card/50">
-                  <p className="text-sm font-semibold text-foreground mb-1">Prefer a quick demo?</p>
-                  <p className="text-xs text-muted-foreground mb-4">
-                    See DealerOps in action with a personalised walkthrough.
+                <div className="p-6 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 to-card/50">
+                  <p className="text-sm font-bold text-foreground mb-1.5">Prefer a quick demo?</p>
+                  <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
+                    See DealerOps in action with a personalised walkthrough of the platform.
                   </p>
                   <Link to="/login?mode=signup">
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" className="border-primary/30 text-primary hover:bg-primary/10">
                       Start Free Trial <ArrowRight className="ml-2 h-3 w-3" />
                     </Button>
                   </Link>
-                </div>
-
-                <div className="mt-6 p-4 rounded-lg bg-muted/30 border border-border/30">
-                  <p className="text-xs text-muted-foreground">
-                    <span className="font-medium text-foreground">Response time:</span>{" "}
-                    We typically respond within 4 business hours.
-                  </p>
                 </div>
               </motion.div>
             </div>
@@ -150,39 +145,39 @@ export default function Contact() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.15 }}
               >
-                <form onSubmit={handleSubmit} className="space-y-4 p-6 rounded-xl border border-border/50 bg-card/50">
+                <form onSubmit={handleSubmit} className="space-y-5 p-7 rounded-2xl border border-border/50 bg-card/30">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="firstName" className="text-xs">First Name</Label>
-                      <Input id="firstName" name="firstName" required className="mt-1" />
+                      <Label htmlFor="firstName" className="text-xs font-semibold">First Name</Label>
+                      <Input id="firstName" name="firstName" required className="mt-1.5" />
                     </div>
                     <div>
-                      <Label htmlFor="lastName" className="text-xs">Last Name</Label>
-                      <Input id="lastName" name="lastName" required className="mt-1" />
+                      <Label htmlFor="lastName" className="text-xs font-semibold">Last Name</Label>
+                      <Input id="lastName" name="lastName" required className="mt-1.5" />
                     </div>
                   </div>
 
                   <div>
-                    <Label htmlFor="email" className="text-xs">Email</Label>
-                    <Input id="email" name="email" type="email" required className="mt-1" />
+                    <Label htmlFor="email" className="text-xs font-semibold">Email</Label>
+                    <Input id="email" name="email" type="email" required className="mt-1.5" />
                   </div>
 
                   <div>
-                    <Label htmlFor="dealership" className="text-xs">Dealership Name</Label>
-                    <Input id="dealership" name="dealership" className="mt-1" />
+                    <Label htmlFor="dealership" className="text-xs font-semibold">Dealership Name</Label>
+                    <Input id="dealership" name="dealership" className="mt-1.5" />
                   </div>
 
                   <div>
-                    <Label htmlFor="phone" className="text-xs">Phone (optional)</Label>
-                    <Input id="phone" name="phone" className="mt-1" />
+                    <Label htmlFor="phone" className="text-xs font-semibold">Phone (optional)</Label>
+                    <Input id="phone" name="phone" className="mt-1.5" />
                   </div>
 
                   <div>
-                    <Label htmlFor="message" className="text-xs">Message</Label>
-                    <Textarea id="message" name="message" rows={4} required className="mt-1" />
+                    <Label htmlFor="message" className="text-xs font-semibold">Message</Label>
+                    <Textarea id="message" name="message" rows={4} required className="mt-1.5" />
                   </div>
 
-                  <Button type="submit" className="w-full glow" disabled={loading}>
+                  <Button type="submit" className="w-full glow h-11 font-semibold" disabled={loading}>
                     {loading ? "Sending..." : "Send Message"}
                   </Button>
 
@@ -196,7 +191,6 @@ export default function Contact() {
           </div>
         </div>
       </section>
-
     </div>
   );
 }

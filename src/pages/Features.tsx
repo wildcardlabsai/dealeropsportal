@@ -20,22 +20,26 @@ const keyFeatures = [
     icon: Users, title: "Customer CRM",
     description: "Complete customer profiles with contact details, communication logs, consent tracking, and linked vehicles.",
     bullets: ["Full timeline view with every interaction", "GDPR consent management built in", "Linked vehicles, invoices, and warranties", "Smart search and CSV export"],
+    gradient: "from-blue-500/20 to-cyan-500/20",
   },
   {
     icon: Wrench, title: "Aftersales & Complaints",
     description: "Case management with CRA guidance, SLA timers, and dispute resolution tools.",
     bullets: ["Consumer Rights Act decision engine", "Priority-based SLA tracking", "Evidence checklists and document uploads", "Dispute summary PDF generation"],
+    gradient: "from-amber-500/20 to-orange-500/20",
   },
   {
     icon: Car, title: "Vehicle Stock Management",
     description: "Track your entire stock lifecycle from purchase to sale with real-time data checks.",
     bullets: ["DVLA, DVSA MOT & vehicle data checks", "Photos, documents, and status tracking", "CSV import/export and bulk actions", "Full ownership and mileage history"],
+    gradient: "from-emerald-500/20 to-green-500/20",
   },
 ];
 
 const categories = [
   {
     title: "Sales & CRM",
+    description: "Win more deals and track every enquiry through to sale.",
     features: [
       { icon: Briefcase, title: "Leads Pipeline", description: "Visual pipeline board for managing enquiries, tracking conversion, and auto-creating follow-up tasks." },
       { icon: FileText, title: "Sale Invoices", description: "Professional invoices with line items, VAT, deposits, payment tracking, and PDF generation." },
@@ -45,6 +49,7 @@ const categories = [
   },
   {
     title: "Aftersales & Compliance",
+    description: "Stay compliant and handle returns with confidence.",
     features: [
       { icon: Shield, title: "Warranties", description: "Manage internal and third-party warranties. Track expiry, costs, and generate certificates." },
       { icon: ClipboardCheck, title: "Compliance Centre", description: "GDPR consent records, data retention controls, customer data export, and right-to-erasure." },
@@ -53,6 +58,7 @@ const categories = [
   },
   {
     title: "Operations & Reporting",
+    description: "Run your dealership efficiently with data-driven insights.",
     features: [
       { icon: CarFront, title: "Courtesy Cars", description: "Track loan vehicles with calendar view, agreements, fuel levels, damage records, and overdue alerts." },
       { icon: BarChart3, title: "Reports & KPIs", description: "Staff leaderboards, sales metrics, aftersales stats, and date-filtered exportable reports." },
@@ -76,7 +82,7 @@ export default function Features() {
             transition={{ duration: 0.7 }}
             className="text-center max-w-3xl mx-auto"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-border bg-muted/50 text-xs text-muted-foreground mb-8">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/5 text-xs text-primary mb-8">
               <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
               14 integrated modules
             </div>
@@ -91,11 +97,12 @@ export default function Features() {
         </div>
       </section>
 
-      {/* Key Features — larger cards */}
-      <section className="py-20 border-t border-border/30">
+      {/* Key Features — larger cards with gradient backgrounds */}
+      <section className="py-24 border-t border-border/30">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-14">
+          <div className="text-center mb-16">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+              <span className="inline-block text-xs font-semibold text-primary uppercase tracking-widest mb-3">Core Platform</span>
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Core modules</h2>
               <p className="text-muted-foreground max-w-lg mx-auto">The three pillars that power your dealership operations.</p>
             </motion.div>
@@ -110,16 +117,16 @@ export default function Features() {
                 whileInView="visible"
                 viewport={{ once: true }}
                 variants={fadeUp}
-                className="p-6 rounded-xl border border-primary/30 bg-primary/5 hover:bg-primary/10 transition-all duration-300"
+                className={`relative p-7 rounded-2xl border border-primary/20 bg-gradient-to-br ${f.gradient} hover:border-primary/40 transition-all duration-500 overflow-hidden`}
               >
-                <div className="h-12 w-12 rounded-lg bg-primary/20 flex items-center justify-center mb-4">
+                <div className="h-13 w-13 rounded-xl bg-background/50 backdrop-blur-sm flex items-center justify-center mb-5 border border-border/30">
                   <f.icon className="h-6 w-6 text-primary" />
                 </div>
                 <h3 className="text-lg font-bold text-foreground mb-2">{f.title}</h3>
-                <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{f.description}</p>
-                <ul className="space-y-2">
+                <p className="text-sm text-muted-foreground mb-5 leading-relaxed">{f.description}</p>
+                <ul className="space-y-2.5">
                   {f.bullets.map((b) => (
-                    <li key={b} className="flex items-start gap-2 text-sm text-foreground">
+                    <li key={b} className="flex items-start gap-2.5 text-sm text-foreground">
                       <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                       {b}
                     </li>
@@ -131,20 +138,22 @@ export default function Features() {
         </div>
       </section>
 
-      {/* Categorised Features */}
+      {/* Categorised Features — alternating alignment */}
       {categories.map((cat, catIdx) => (
-        <section key={cat.title} className="py-16 border-t border-border/30">
+        <section key={cat.title} className={`py-20 border-t border-border/30 ${catIdx % 2 === 1 ? 'bg-muted/10' : ''}`}>
           <div className="container mx-auto px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="mb-10"
+              className="mb-12 max-w-4xl"
             >
-              <h2 className="text-2xl font-bold text-foreground">{cat.title}</h2>
+              <span className="inline-block text-xs font-semibold text-primary uppercase tracking-widest mb-2">{`0${catIdx + 1}`}</span>
+              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">{cat.title}</h2>
+              <p className="text-sm text-muted-foreground">{cat.description}</p>
             </motion.div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-4xl">
+            <div className={`grid grid-cols-1 md:grid-cols-2 gap-5 max-w-4xl ${catIdx % 2 === 1 ? 'md:ml-auto' : ''}`}>
               {cat.features.map((f, i) => (
                 <motion.div
                   key={f.title}
@@ -153,13 +162,13 @@ export default function Features() {
                   whileInView="visible"
                   viewport={{ once: true }}
                   variants={fadeUp}
-                  className="flex gap-4 p-5 rounded-xl border border-border/50 bg-card/50 hover:bg-card transition-all duration-300"
+                  className="group flex gap-4 p-6 rounded-2xl border border-border/50 bg-card/30 hover:bg-card/60 hover:border-primary/20 transition-all duration-500 hover:shadow-lg hover:shadow-primary/5"
                 >
-                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                  <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
                     <f.icon className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold text-foreground mb-1">{f.title}</h3>
+                    <h3 className="text-sm font-bold text-foreground mb-1.5">{f.title}</h3>
                     <p className="text-xs text-muted-foreground leading-relaxed">{f.description}</p>
                   </div>
                 </motion.div>
@@ -170,27 +179,28 @@ export default function Features() {
       ))}
 
       {/* CTA */}
-      <section className="py-24 border-t border-border/30">
-        <div className="container mx-auto px-4 text-center">
+      <section className="py-28 border-t border-border/30 relative">
+        <div className="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent" />
+        <div className="container mx-auto px-4 text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="max-w-2xl mx-auto"
           >
-            <div className="glass rounded-2xl p-12 glow">
+            <div className="rounded-3xl p-12 md:p-16 border border-primary/20 bg-gradient-to-br from-primary/10 via-card/80 to-card/50 backdrop-blur-sm shadow-2xl shadow-primary/5">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to see it in action?</h2>
               <p className="text-muted-foreground mb-8 max-w-md mx-auto">
                 Start your free 14-day trial and explore every module with no commitment.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link to="/login?mode=signup">
-                  <Button size="lg" className="glow text-base px-8 h-12">
+                  <Button size="lg" className="glow text-base px-8 h-13 font-semibold">
                     Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
                 <Link to="/pricing">
-                  <Button variant="outline" size="lg" className="text-base px-8 h-12">
+                  <Button variant="outline" size="lg" className="text-base px-8 h-13">
                     View Pricing
                   </Button>
                 </Link>
