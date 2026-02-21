@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Check, X, ArrowRight, ShieldCheck, Lock, Globe, Award } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { DemoRequestDialog } from "@/components/public/DemoRequestDialog";
+
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -110,7 +110,7 @@ const trustBadges = [
 export default function Pricing() {
   const [annual, setAnnual] = useState(false);
   const [showComparison, setShowComparison] = useState(false);
-  const [demoOpen, setDemoOpen] = useState(false);
+  
 
   return (
     <div>
@@ -337,15 +337,16 @@ export default function Pricing() {
               <p className="text-muted-foreground mb-8 max-w-md mx-auto">
                 Talk to our team and we'll help you find the right fit for your dealership.
               </p>
-              <Button size="lg" className="glow text-base px-8 h-12" onClick={() => setDemoOpen(true)}>
-                Request a Demo <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
+              <Link to="/login?mode=signup">
+                <Button size="lg" className="glow text-base px-8 h-12">
+                  Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
             </div>
           </motion.div>
         </div>
       </section>
 
-      <DemoRequestDialog open={demoOpen} onOpenChange={setDemoOpen} />
     </div>
   );
 }

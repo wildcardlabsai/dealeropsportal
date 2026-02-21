@@ -184,7 +184,7 @@ export default function Features() {
                 Start your free 14-day trial and explore every module with no commitment.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link to="/contact">
+                <Link to="/login?mode=signup">
                   <Button size="lg" className="glow text-base px-8 h-12">
                     Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>

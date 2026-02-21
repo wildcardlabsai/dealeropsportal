@@ -3,7 +3,6 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import { DemoRequestDialog } from "./DemoRequestDialog";
 
 const navLinks = [
   { label: "Features", to: "/features" },
@@ -15,7 +14,6 @@ const navLinks = [
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [demoOpen, setDemoOpen] = useState(false);
   const location = useLocation();
 
   return (
@@ -47,9 +45,11 @@ export function Navbar() {
         </div>
 
         <div className="hidden md:flex items-center gap-3">
-          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground" onClick={() => setDemoOpen(true)}>
-            Request Demo
-          </Button>
+          <Link to="/login?mode=signup">
+            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+              Start Free Trial
+            </Button>
+          </Link>
           <Link to="/login">
             <Button size="sm" className="glow">
               Dealer Login
@@ -85,9 +85,11 @@ export function Navbar() {
                 </Link>
               ))}
               <div className="pt-2 border-t border-border/30 space-y-2">
-                <Button variant="ghost" size="sm" className="w-full text-muted-foreground" onClick={() => { setMobileOpen(false); setDemoOpen(true); }}>
-                  Request Demo
-                </Button>
+                <Link to="/login?mode=signup" onClick={() => setMobileOpen(false)}>
+                  <Button variant="ghost" size="sm" className="w-full text-muted-foreground">
+                    Start Free Trial
+                  </Button>
+                </Link>
                 <Link to="/login" onClick={() => setMobileOpen(false)}>
                   <Button size="sm" className="w-full">
                     Dealer Login
@@ -98,8 +100,6 @@ export function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      <DemoRequestDialog open={demoOpen} onOpenChange={setDemoOpen} />
     </nav>
   );
 }

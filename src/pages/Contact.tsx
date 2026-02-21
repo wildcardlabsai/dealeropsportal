@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { DemoRequestDialog } from "@/components/public/DemoRequestDialog";
+import { Link } from "react-router-dom";
 import { Mail, Phone, Clock, MapPin, ArrowRight } from "lucide-react";
 
 const fadeUp = {
@@ -26,7 +26,7 @@ const contactInfo = [
 
 export default function Contact() {
   const [loading, setLoading] = useState(false);
-  const [demoOpen, setDemoOpen] = useState(false);
+  
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -127,9 +127,11 @@ export default function Contact() {
                   <p className="text-xs text-muted-foreground mb-4">
                     See DealerOps in action with a personalised walkthrough.
                   </p>
-                  <Button variant="outline" size="sm" onClick={() => setDemoOpen(true)}>
-                    Request Demo <ArrowRight className="ml-2 h-3 w-3" />
-                  </Button>
+                  <Link to="/login?mode=signup">
+                    <Button variant="outline" size="sm">
+                      Start Free Trial <ArrowRight className="ml-2 h-3 w-3" />
+                    </Button>
+                  </Link>
                 </div>
 
                 <div className="mt-6 p-4 rounded-lg bg-muted/30 border border-border/30">
@@ -195,7 +197,6 @@ export default function Contact() {
         </div>
       </section>
 
-      <DemoRequestDialog open={demoOpen} onOpenChange={setDemoOpen} />
     </div>
   );
 }

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { MessageSquare, Clock, FileText, Headphones, ArrowRight, ChevronRight, Mail } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { DemoRequestDialog } from "@/components/public/DemoRequestDialog";
+
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -46,7 +46,7 @@ const faqs = [
 ];
 
 export default function SupportPage() {
-  const [demoOpen, setDemoOpen] = useState(false);
+  
 
   return (
     <div>
@@ -215,16 +215,17 @@ export default function SupportPage() {
                     Contact Us <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
-                <Button variant="outline" size="lg" className="text-base px-8 h-12" onClick={() => setDemoOpen(true)}>
-                  Request Demo
-                </Button>
+                <Link to="/login?mode=signup">
+                  <Button variant="outline" size="lg" className="text-base px-8 h-12">
+                    Start Free Trial
+                  </Button>
+                </Link>
               </div>
             </div>
           </motion.div>
         </div>
       </section>
 
-      <DemoRequestDialog open={demoOpen} onOpenChange={setDemoOpen} />
     </div>
   );
 }
