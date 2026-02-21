@@ -18,21 +18,21 @@ export function Navbar() {
   const location = useLocation();
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-border/30">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/30">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2.5">
           <img src={doLogo} alt="DealerOps logo" className="h-8 w-8 object-contain" />
           <span className="text-lg font-bold text-foreground">
             Dealer<span className="text-primary">Ops</span>
           </span>
         </Link>
 
-        <div className="hidden md:flex items-center gap-1">
+        <div className="hidden md:flex items-center gap-0.5">
           {navLinks.map((link) => (
             <Link
               key={link.to}
               to={link.to}
-              className={`px-3 py-2 text-sm rounded-md transition-colors ${
+              className={`px-3.5 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                 location.pathname === link.to
                   ? "text-primary bg-primary/10"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -43,14 +43,14 @@ export function Navbar() {
           ))}
         </div>
 
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-2.5">
           <Link to="/login?mode=signup">
-            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground font-medium">
               Start Free Trial
             </Button>
           </Link>
           <Link to="/login">
-            <Button size="sm" className="glow">
+            <Button size="sm" className="glow font-semibold">
               Dealer Login
             </Button>
           </Link>
@@ -70,27 +70,31 @@ export function Navbar() {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="md:hidden overflow-hidden border-t border-border/30 glass"
+            className="md:hidden overflow-hidden border-t border-border/30 bg-background/95 backdrop-blur-xl"
           >
-            <div className="p-4 space-y-2">
+            <div className="p-4 space-y-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.to}
                   to={link.to}
                   onClick={() => setMobileOpen(false)}
-                  className="block px-3 py-2 text-sm rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  className={`block px-4 py-2.5 text-sm font-medium rounded-lg transition-colors ${
+                    location.pathname === link.to
+                      ? "text-primary bg-primary/10"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  }`}
                 >
                   {link.label}
                 </Link>
               ))}
-              <div className="pt-2 border-t border-border/30 space-y-2">
+              <div className="pt-3 mt-2 border-t border-border/30 space-y-2">
                 <Link to="/login?mode=signup" onClick={() => setMobileOpen(false)}>
                   <Button variant="ghost" size="sm" className="w-full text-muted-foreground">
                     Start Free Trial
                   </Button>
                 </Link>
                 <Link to="/login" onClick={() => setMobileOpen(false)}>
-                  <Button size="sm" className="w-full">
+                  <Button size="sm" className="w-full glow">
                     Dealer Login
                   </Button>
                 </Link>

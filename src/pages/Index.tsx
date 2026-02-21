@@ -6,16 +6,16 @@ import {
   Car, Users, Shield, FileText, Wrench, Star,
   BarChart3, ClipboardCheck, ArrowRight, CheckCircle2,
   Lock, Headphones, Globe, Zap, ChevronRight,
-  ShieldCheck, Award, TrendingUp
+  ShieldCheck, Award, TrendingUp, Sparkles, Play
 } from "lucide-react";
 
 /* ─── hero feature carousel ─── */
 
 const heroFeatures = [
-  { icon: Car, title: "Vehicle Management", stat: "2,500+", statLabel: "vehicles tracked", desc: "Stock control, DVLA checks, MOT history" },
-  { icon: Users, title: "Customer CRM", stat: "10k+", statLabel: "customer records", desc: "Profiles, comms logs, consent tracking" },
-  { icon: Wrench, title: "Aftersales", stat: "98%", statLabel: "SLA compliance", desc: "CRA guidance, case management, disputes" },
-  { icon: BarChart3, title: "Reports & KPIs", stat: "50k+", statLabel: "invoices generated", desc: "Staff performance & business insights" },
+  { icon: Car, title: "Vehicle Management", stat: "2,500+", statLabel: "vehicles tracked", desc: "Stock control, DVLA checks, MOT history", color: "from-blue-500/20 to-cyan-500/20" },
+  { icon: Users, title: "Customer CRM", stat: "10k+", statLabel: "customer records", desc: "Profiles, comms logs, consent tracking", color: "from-violet-500/20 to-purple-500/20" },
+  { icon: Wrench, title: "Aftersales", stat: "98%", statLabel: "SLA compliance", desc: "CRA guidance, case management, disputes", color: "from-amber-500/20 to-orange-500/20" },
+  { icon: BarChart3, title: "Reports & KPIs", stat: "50k+", statLabel: "invoices generated", desc: "Staff performance & business insights", color: "from-emerald-500/20 to-green-500/20" },
 ];
 
 /* ─── data ─── */
@@ -39,9 +39,9 @@ const stats = [
 ];
 
 const steps = [
-  { step: "01", title: "Sign Up", description: "Create your account and tell us about your dealership. We'll have you set up in under 10 minutes." },
-  { step: "02", title: "Import Your Data", description: "Bring your existing stock, customers, and records across with our simple import tools." },
-  { step: "03", title: "Go Live", description: "Start managing your dealership from one unified dashboard — anywhere, any device." },
+  { step: "01", title: "Sign Up", description: "Create your account and tell us about your dealership. We'll have you set up in under 10 minutes.", icon: Sparkles },
+  { step: "02", title: "Import Your Data", description: "Bring your existing stock, customers, and records across with our simple import tools.", icon: FileText },
+  { step: "03", title: "Go Live", description: "Start managing your dealership from one unified dashboard — anywhere, any device.", icon: Play },
 ];
 
 const testimonials = [
@@ -91,7 +91,7 @@ function AnimatedCounter({ value, suffix, label }: { value: number; suffix: stri
   }, [isInView, value]);
 
   return (
-    <div ref={ref} className="text-center">
+    <div ref={ref} className="text-center p-6 rounded-xl border border-border/50 bg-card/30">
       <div className="text-3xl md:text-4xl font-bold text-foreground">
         {Number.isInteger(value) ? Math.floor(display) : display.toFixed(1)}
         <span className="text-primary">{suffix}</span>
@@ -120,31 +120,33 @@ function HeroFeatureShowcase() {
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, delay: 0.3 }}
-      className="mt-16 max-w-3xl mx-auto"
+      className="mt-16 max-w-4xl mx-auto"
     >
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 mb-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
         {heroFeatures.map((f, i) => (
           <button
             key={f.title}
             onClick={() => setActive(i)}
-            className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-left text-xs font-medium transition-all duration-300 ${
+            className={`relative flex items-center gap-2 px-4 py-3 rounded-xl text-left text-xs font-medium transition-all duration-300 overflow-hidden ${
               i === active
-                ? "bg-primary/15 text-primary border border-primary/30"
+                ? "text-primary border border-primary/40 shadow-lg shadow-primary/5"
                 : "bg-card/50 text-muted-foreground border border-border/50 hover:border-border hover:text-foreground"
             }`}
           >
-            <f.icon className="h-3.5 w-3.5 shrink-0" />
-            <span className="hidden sm:inline">{f.title}</span>
-            <span className="sm:hidden">{f.title}</span>
+            {i === active && (
+              <div className={`absolute inset-0 bg-gradient-to-br ${f.color}`} />
+            )}
+            <f.icon className="h-4 w-4 shrink-0 relative z-10" />
+            <span className="relative z-10 truncate">{f.title}</span>
           </button>
         ))}
       </div>
 
-      <div className="relative rounded-xl border border-border/50 bg-card/50 p-8 min-h-[140px] overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-0.5 bg-muted/30 rounded-full overflow-hidden">
+      <div className={`relative rounded-2xl border border-border/50 p-8 md:p-10 min-h-[160px] overflow-hidden bg-gradient-to-br ${feat.color}`}>
+        <div className="absolute top-0 left-0 right-0 h-1 bg-muted/20 rounded-full overflow-hidden">
           <motion.div
             key={active}
-            className="h-full bg-primary"
+            className="h-full bg-primary rounded-full"
             initial={{ width: "0%" }}
             animate={{ width: "100%" }}
             transition={{ duration: 3.5, ease: "linear" }}
@@ -160,14 +162,14 @@ function HeroFeatureShowcase() {
             transition={{ duration: 0.3 }}
             className="flex flex-col sm:flex-row items-start sm:items-center gap-6"
           >
-            <div className="h-16 w-16 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+            <div className="h-16 w-16 rounded-2xl bg-background/50 backdrop-blur-sm flex items-center justify-center shrink-0 border border-border/30">
               <feat.icon className="h-8 w-8 text-primary" />
             </div>
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-foreground mb-1">{feat.title}</h3>
               <p className="text-sm text-muted-foreground">{feat.desc}</p>
             </div>
-            <div className="text-right shrink-0">
+            <div className="text-right shrink-0 bg-background/30 backdrop-blur-sm rounded-xl px-5 py-3 border border-border/20">
               <div className="text-2xl font-bold text-foreground">{feat.stat}</div>
               <p className="text-xs text-muted-foreground">{feat.statLabel}</p>
             </div>
@@ -185,9 +187,8 @@ export default function Index() {
     <div>
       {/* ═══ Hero ═══ */}
       <section className="relative overflow-hidden py-16 md:py-24">
-        {/* background effects */}
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-primary/5 blur-[160px]" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] rounded-full bg-primary/5 blur-[200px]" />
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
 
         <div className="container mx-auto px-4 relative z-10">
@@ -197,7 +198,7 @@ export default function Index() {
             transition={{ duration: 0.7 }}
             className="max-w-3xl mx-auto text-center"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-border bg-muted/50 text-xs text-muted-foreground mb-8">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/5 text-xs text-primary mb-8">
               <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
               Purpose-built for UK motor trade
             </div>
@@ -208,19 +209,19 @@ export default function Index() {
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
-              The all-in-one management platform for independent car dealers. 
+              The all-in-one management platform for independent car dealers.
               Customers, stock, aftersales, compliance — all in one place.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/login?mode=signup">
-                <Button size="lg" className="glow text-base px-8 h-12">
+                <Button size="lg" className="glow text-base px-8 h-13 text-base font-semibold">
                   Start Free Trial
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
               <Link to="/features">
-                <Button variant="outline" size="lg" className="text-base px-8 h-12">
+                <Button variant="outline" size="lg" className="text-base px-8 h-13">
                   See All Features
                 </Button>
               </Link>
@@ -229,15 +230,14 @@ export default function Index() {
             <p className="text-xs text-muted-foreground mt-4">No credit card required · 14-day free trial · Cancel anytime</p>
           </motion.div>
 
-          {/* Animated Feature Showcase */}
           <HeroFeatureShowcase />
         </div>
       </section>
 
       {/* ═══ Trust Badges ═══ */}
-      <section className="py-8 border-t border-border/30">
+      <section className="py-10 border-t border-border/30 bg-muted/20">
         <div className="container mx-auto px-4">
-          <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16">
+          <div className="flex flex-wrap items-center justify-center gap-10 md:gap-20">
             {trustBadges.map((badge, i) => (
               <motion.div
                 key={badge.label}
@@ -245,10 +245,12 @@ export default function Index() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
                 viewport={{ once: true }}
-                className="flex items-center gap-2 text-muted-foreground"
+                className="flex items-center gap-2.5 text-muted-foreground"
               >
-                <badge.icon className="h-4 w-4 text-primary" />
-                <span className="text-xs font-medium">{badge.label}</span>
+                <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <badge.icon className="h-4 w-4 text-primary" />
+                </div>
+                <span className="text-xs font-semibold tracking-wide uppercase">{badge.label}</span>
               </motion.div>
             ))}
           </div>
@@ -256,9 +258,9 @@ export default function Index() {
       </section>
 
       {/* ═══ Stats ═══ */}
-      <section className="py-16 border-t border-border/30">
+      <section className="py-20 border-t border-border/30">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
             {stats.map((stat) => (
               <AnimatedCounter key={stat.label} {...stat} />
             ))}
@@ -266,19 +268,21 @@ export default function Index() {
         </div>
       </section>
 
-      {/* ═══ Benefits ═══ */}
-      <section className="py-20 border-t border-border/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-14">
+      {/* ═══ Benefits — alternating layout ═══ */}
+      <section className="py-24 border-t border-border/30 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/[0.02] to-transparent" />
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-16">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Why dealers choose DealerOps</h2>
+              <span className="inline-block text-xs font-semibold text-primary uppercase tracking-widest mb-3">Why DealerOps</span>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Why dealers choose us</h2>
               <p className="text-muted-foreground max-w-lg mx-auto">
                 Everything you need to manage a modern dealership, without the complexity.
               </p>
             </motion.div>
           </div>
 
-          <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
               { icon: Zap, title: "Built for UK Dealers", desc: "Purpose-built for independent UK motor trade with DVLA, DVSA, and vehicle data integrations." },
               { icon: Users, title: "Multi-Site Ready", desc: "Multi-site and multi-user with role-based access control across your entire operation." },
@@ -294,12 +298,12 @@ export default function Index() {
                 whileInView="visible"
                 viewport={{ once: true }}
                 variants={fadeUp}
-                className="p-5 rounded-xl border border-border/50 bg-card/50 hover:bg-card hover:border-border transition-all duration-300"
+                className="group p-6 rounded-2xl border border-border/50 bg-card/30 hover:bg-card/60 hover:border-primary/20 transition-all duration-500 hover:shadow-lg hover:shadow-primary/5"
               >
-                <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
-                  <item.icon className="h-4 w-4 text-primary" />
+                <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                  <item.icon className="h-5 w-5 text-primary" />
                 </div>
-                <h3 className="text-sm font-semibold text-foreground mb-1.5">{item.title}</h3>
+                <h3 className="text-sm font-bold text-foreground mb-2">{item.title}</h3>
                 <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
               </motion.div>
             ))}
@@ -308,10 +312,11 @@ export default function Index() {
       </section>
 
       {/* ═══ How It Works ═══ */}
-      <section className="py-20 border-t border-border/30">
+      <section className="py-24 border-t border-border/30">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-14">
+          <div className="text-center mb-16">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+              <span className="inline-block text-xs font-semibold text-primary uppercase tracking-widest mb-3">Getting Started</span>
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Up and running in minutes</h2>
               <p className="text-muted-foreground max-w-lg mx-auto">
                 Getting started with DealerOps is simple. No complex setup, no IT team needed.
@@ -319,7 +324,10 @@ export default function Index() {
             </motion.div>
           </div>
 
-          <div className="max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+            {/* Connecting line */}
+            <div className="hidden md:block absolute top-12 left-[20%] right-[20%] h-px bg-gradient-to-r from-primary/30 via-primary/50 to-primary/30" />
+            
             {steps.map((s, i) => (
               <motion.div
                 key={s.step}
@@ -330,23 +338,25 @@ export default function Index() {
                 variants={fadeUp}
                 className="relative text-center"
               >
-                <div className="text-5xl font-bold text-primary/10 mb-3">{s.step}</div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">{s.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{s.description}</p>
-                {i < steps.length - 1 && (
-                  <ChevronRight className="hidden md:block absolute top-8 -right-4 h-5 w-5 text-border" />
-                )}
+                <div className="relative inline-flex h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 items-center justify-center mb-5 border border-primary/20 mx-auto">
+                  <s.icon className="h-7 w-7 text-primary" />
+                  <span className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">{i + 1}</span>
+                </div>
+                <h3 className="text-lg font-bold text-foreground mb-2">{s.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">{s.description}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ═══ Modules ═══ */}
-      <section className="py-20 border-t border-border/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-14">
+      {/* ═══ Modules — bento-style ═══ */}
+      <section className="py-24 border-t border-border/30 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/[0.02] to-transparent" />
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-16">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+              <span className="inline-block text-xs font-semibold text-primary uppercase tracking-widest mb-3">Platform</span>
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Everything in one platform</h2>
               <p className="text-muted-foreground max-w-lg mx-auto">
                 Powerful modules that work together to streamline your dealership operations.
@@ -354,7 +364,8 @@ export default function Index() {
             </motion.div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Bento grid */}
+          <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {modules.map((mod, i) => (
               <motion.div
                 key={mod.title}
@@ -363,26 +374,31 @@ export default function Index() {
                 whileInView="visible"
                 viewport={{ once: true }}
                 variants={fadeUp}
-                className={`group p-5 rounded-xl border transition-all duration-300 ${
+                className={`group relative p-6 rounded-2xl border transition-all duration-500 overflow-hidden ${
                   mod.featured
-                    ? "border-primary/30 bg-primary/5 hover:bg-primary/10 hover:border-primary/50"
-                    : "border-border/50 bg-card/50 hover:bg-card hover:border-border"
+                    ? "border-primary/30 bg-gradient-to-br from-primary/10 to-primary/[0.02] hover:border-primary/50 sm:col-span-2 lg:col-span-2"
+                    : "border-border/50 bg-card/30 hover:bg-card/60 hover:border-border"
                 }`}
               >
-                <div className={`h-10 w-10 rounded-lg flex items-center justify-center mb-4 transition-colors ${
+                {mod.featured && (
+                  <div className="absolute top-3 right-3 px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-semibold">
+                    Core
+                  </div>
+                )}
+                <div className={`h-11 w-11 rounded-xl flex items-center justify-center mb-4 transition-colors ${
                   mod.featured ? "bg-primary/20 group-hover:bg-primary/30" : "bg-primary/10 group-hover:bg-primary/20"
                 }`}>
                   <mod.icon className="h-5 w-5 text-primary" />
                 </div>
-                <h3 className="text-sm font-semibold text-foreground mb-2">{mod.title}</h3>
+                <h3 className="text-sm font-bold text-foreground mb-2">{mod.title}</h3>
                 <p className="text-xs text-muted-foreground leading-relaxed">{mod.description}</p>
               </motion.div>
             ))}
           </div>
 
-          <div className="text-center mt-8">
+          <div className="text-center mt-10">
             <Link to="/features">
-              <Button variant="ghost" className="text-primary hover:text-primary/80">
+              <Button variant="outline" className="text-primary border-primary/30 hover:bg-primary/10">
                 View all features <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
@@ -391,10 +407,11 @@ export default function Index() {
       </section>
 
       {/* ═══ Testimonials ═══ */}
-      <section className="py-20 border-t border-border/30">
+      <section className="py-24 border-t border-border/30">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-14">
+          <div className="text-center mb-16">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+              <span className="inline-block text-xs font-semibold text-primary uppercase tracking-widest mb-3">Testimonials</span>
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Trusted by dealers across the UK</h2>
               <p className="text-muted-foreground max-w-lg mx-auto">
                 Hear from dealerships already using DealerOps to run their businesses.
@@ -411,16 +428,17 @@ export default function Index() {
                 whileInView="visible"
                 viewport={{ once: true }}
                 variants={fadeUp}
-                className="p-6 rounded-xl border border-border/50 bg-card/50"
+                className="relative p-6 rounded-2xl border border-border/50 bg-card/30 hover:bg-card/50 transition-all duration-300"
               >
-                <div className="flex gap-1 mb-4">
+                <div className="absolute -top-3 left-6 text-4xl text-primary/20 font-serif">"</div>
+                <div className="flex gap-1 mb-4 pt-2">
                   {[...Array(5)].map((_, j) => (
-                    <Star key={j} className="h-4 w-4 fill-warning text-warning" />
+                    <Star key={j} className="h-3.5 w-3.5 fill-warning text-warning" />
                   ))}
                 </div>
-                <p className="text-sm text-foreground leading-relaxed mb-5 italic">"{t.quote}"</p>
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary shrink-0">
+                <p className="text-sm text-foreground leading-relaxed mb-6">{t.quote}</p>
+                <div className="flex items-center gap-3 pt-4 border-t border-border/30">
+                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center text-xs font-bold text-primary shrink-0">
                     {t.initials}
                   </div>
                   <div>
@@ -435,48 +453,48 @@ export default function Index() {
       </section>
 
       {/* ═══ Pricing Teaser ═══ */}
-      <section className="py-20 border-t border-border/30">
+      <section className="py-20 border-t border-border/30 bg-gradient-to-b from-muted/10 to-transparent">
         <div className="container mx-auto px-4 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+            <span className="inline-block text-xs font-semibold text-primary uppercase tracking-widest mb-3">Pricing</span>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Simple, transparent pricing</h2>
             <p className="text-muted-foreground max-w-lg mx-auto mb-8">
               Plans from <span className="text-foreground font-semibold">£99/month</span>. No setup fees, no hidden costs, no long-term contracts.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to="/pricing">
-                <Button variant="outline" size="lg" className="h-12 px-8">
-                  View Pricing Plans
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
+            <Link to="/pricing">
+              <Button variant="outline" size="lg" className="h-12 px-8 border-primary/30 text-primary hover:bg-primary/10">
+                View Pricing Plans
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
           </motion.div>
         </div>
       </section>
 
       {/* ═══ Final CTA ═══ */}
-      <section className="py-24 border-t border-border/30">
-        <div className="container mx-auto px-4 text-center">
+      <section className="py-28 border-t border-border/30 relative">
+        <div className="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent" />
+        <div className="container mx-auto px-4 text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="max-w-2xl mx-auto"
           >
-            <div className="glass rounded-2xl p-12 glow">
+            <div className="rounded-3xl p-12 md:p-16 border border-primary/20 bg-gradient-to-br from-primary/10 via-card/80 to-card/50 backdrop-blur-sm shadow-2xl shadow-primary/5">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to streamline your dealership?</h2>
               <p className="text-muted-foreground mb-8 max-w-md mx-auto">
                 Join hundreds of UK dealers who've already made the switch. Start your free 14-day trial today.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link to="/login?mode=signup">
-                  <Button size="lg" className="glow h-12 px-8 text-base">
+                  <Button size="lg" className="glow h-13 px-8 text-base font-semibold">
                     Start Free Trial
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
                 <Link to="/login">
-                  <Button variant="outline" size="lg" className="h-12 px-8">
+                  <Button variant="outline" size="lg" className="h-13 px-8">
                     Dealer Login
                   </Button>
                 </Link>
