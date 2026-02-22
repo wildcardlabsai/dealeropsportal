@@ -1,127 +1,67 @@
 
-# AI Assistant for the Dealer Panel
+# Features Page Redesign
 
-## Overview
+## Problems Identified
 
-A floating AI chat assistant will be embedded into the dealer panel, accessible from every page via a chat bubble in the bottom-right corner. It will be context-aware (knowing the dealer's data), conversational, and able to help with daily tasks, compliance questions, and platform navigation.
+1. **Missing features** -- The sidebar has these modules not shown on the Features page:
+   - CRA Shield (Consumer Rights Act decision engine)
+   - Handovers (vehicle handover packs)
+   - Tasks (task management with due dates)
+   - Documents (document library and generation)
+   - Staff KPIs and My KPIs (performance tracking)
+   - Team Management (staff accounts and roles)
+   - Audit Log (full activity trail)
+   - Dashboard (overview with stats)
+   - Dealer AI Chat (AI assistant)
 
----
+2. **Too much vertical whitespace** -- Large padding between sections (py-20, py-24, py-28) creates excessive scrolling on desktop
 
-## What it will do
+3. **No product visuals** -- Every section is text-only cards with icons; no screenshots or mockups to show what the product actually looks like
 
-The assistant will be able to:
-- Answer questions about the dealer's own data ("How many open leads do I have?", "Show me overdue tasks")
-- Provide guidance on compliance, FCA rules, and GDPR
-- Explain CRA Shield scores and aftersales case statuses
-- Give a daily briefing (expiring warranties, overdue tasks, trial status)
-- Help navigate the platform ("Where do I raise an aftersales case?")
-- Answer general dealership business questions
+## Plan
 
-It will NOT have write access — it reads and explains, it does not create or modify records.
+### 1. Reduce spacing throughout
+- Cut section padding from `py-20`/`py-24` to `py-12`/`py-16`
+- Reduce margins between headings and content
+- Tighten the hero section padding
 
----
+### 2. Add placeholder images for each category section
+Each category section will get a side-by-side layout: features on one side, a placeholder image on the other (alternating left/right). The placeholder will be a styled container with a dashed border, a camera icon, and text like "Product screenshot -- CRM Dashboard" so you know exactly which screenshot to generate later.
 
-## Architecture
-
+Layout per section:
 ```text
-[Dealer UI] → floating chat bubble
-     ↓ open
-[Chat Panel] — sends messages
-     ↓
-[Edge Function: dealer-ai-chat]
-     ├── Fetches dealer context (stats, open items) from DB using service role
-     ├── Builds system prompt with dealer-specific context
-     └── Streams response from Lovable AI (gemini-3-flash-preview)
++---------------------------+-------------------+
+| Feature cards (left)      | [Placeholder img] |
++---------------------------+-------------------+
+
+Next section flips:
++-------------------+---------------------------+
+| [Placeholder img] | Feature cards (right)     |
++-------------------+---------------------------+
 ```
 
-The edge function uses the `LOVABLE_API_KEY` already configured — no new secrets needed.
+### 3. Add the missing features to the categories
 
----
+Reorganise into 5 categories instead of 3:
 
-## Components to Build
+- **Sales and CRM**: Leads Pipeline, Sale Invoices, Vehicle Data Checks, Handovers
+- **Aftersales and Legal**: Aftersales and Complaints, CRA Shield, Warranties
+- **Operations**: Courtesy Cars, Tasks, Documents, Review Booster
+- **Reporting and Team**: Dashboard, Reports and KPIs, Staff KPIs, Team Management
+- **Compliance and Admin**: Compliance Centre, Audit Log, Dealer AI Chat, Support Tickets
 
-### 1. Edge Function — `supabase/functions/dealer-ai-chat/index.ts`
-- Accepts `{ messages, dealerId }` from the authenticated request
-- Validates the dealer has access (JWT check)
-- Fetches a live snapshot of dealer data:
-  - Open leads count
-  - Active warranties
-  - Overdue tasks
-  - Open aftersales cases
-  - Open compliance items (complaints, DSRs)
-  - Trial status / days remaining
-- Injects this context into a system prompt
-- Streams the response back using `gemini-3-flash-preview` via Lovable AI gateway
-- Handles 429/402 rate limit errors gracefully
+### 4. Add a hero placeholder image
+Below the hero text, add a wide placeholder for a dashboard overview screenshot.
 
-### 2. Chat UI Component — `src/components/app/DealerAIChat.tsx`
-A self-contained floating chat widget:
-- **Trigger button**: Fixed bottom-right `Bot` icon button with a pulsing indicator
-- **Chat panel**: Slides up as a card (not a full-page modal) — roughly 400px wide, 500px tall
-- **Message list**: Shows user and assistant messages with markdown rendering (using `dangerouslySetInnerHTML` with basic markdown parsing or a lightweight approach)
-- **Input bar**: Text input + send button, `Enter` to send
-- **Streaming**: Tokens render as they arrive, no full-page reload
-- **Suggested prompts**: On first open, shows 4 quick-start chips:
-  - "Give me a daily briefing"
-  - "How many open leads do I have?"
-  - "What are my overdue tasks?"
-  - "Explain my CRA Shield score"
-- **Clear chat**: Button to reset the conversation
-- **Loading state**: Animated dots while the assistant is thinking
+### 5. Keep the core modules section (3 cards) but add a placeholder below each card for a feature screenshot.
 
-### 3. Integration into AppLayout — `src/components/app/AppLayout.tsx`
-- Import and render `<DealerAIChat />` inside the layout, alongside `<Outlet />`
-- It will float over all dealer pages without affecting layout flow
+## Technical Details
 
-### 4. Config — `supabase/config.toml`
-- Add `[functions.dealer-ai-chat]` with `verify_jwt = false` (JWT validated manually in the function using the auth header)
-
----
-
-## System Prompt Design
-
-The AI will receive a context-rich system prompt like:
-
-```
-You are DealerOps AI, an assistant embedded in the DealerOps platform for a UK motor dealership.
-
-Current dealer snapshot (live data):
-- Open Leads: 12
-- Active Warranties: 8
-- Overdue Tasks: 3
-- Open Aftersales Cases: 5
-- Open Complaints: 1
-- Open DSRs: 0
-- Trial: 9 days remaining
-
-You help dealer staff understand their data, navigate the platform, and answer compliance questions (FCA, GDPR, Consumer Duty). You do not modify records. Be concise, professional, and helpful.
-```
-
----
-
-## Security Considerations
-
-- The edge function reads the JWT from the `Authorization` header and verifies the user's `dealer_id` from their profile before fetching any data
-- All data fetching uses the service role key server-side — the client never sees raw data queries
-- The assistant only has access to the dealer's own scoped data (RLS-equivalent filtering done manually in the function)
-- No write operations are performed by the AI
-
----
-
-## Files to Create / Modify
-
-| File | Action |
-|---|---|
-| `supabase/functions/dealer-ai-chat/index.ts` | Create — edge function |
-| `src/components/app/DealerAIChat.tsx` | Create — floating chat UI |
-| `src/components/app/AppLayout.tsx` | Edit — add `<DealerAIChat />` |
-| `supabase/config.toml` | Edit — register new function |
-
----
-
-## Design Style
-
-- Matches existing dark/light theme using Tailwind and existing `bg-card`, `border-border`, `text-primary` tokens
-- Floating button uses `bg-primary` with a subtle `ring-2 ring-primary/30` glow
-- Chat panel uses the same card/border styling as the rest of the app
-- No third-party UI libraries needed beyond what's already installed
+### File changes
+- `src/pages/Features.tsx` -- Full rewrite of the categories data and layout:
+  - Update `categories` array to 5 groups with all missing features added
+  - Change section layout from single-column cards to a 2-column grid (features + placeholder image)
+  - Reduce all `py-*` values
+  - Add `ImagePlaceholder` component (inline) -- a rounded div with dashed border, muted icon, and label text
+  - Add hero image placeholder below the hero subtitle
+  - Add icons imports for new features (ShieldAlert, PackageCheck, Target, FolderOpen, TrendingUp, UsersRound, ScrollText, LayoutDashboard, Bot)
