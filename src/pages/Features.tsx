@@ -172,7 +172,7 @@ export default function Features() {
                 whileInView="visible"
                 viewport={{ once: true }}
                 variants={fadeUp}
-                className={`relative rounded-2xl border border-primary/20 bg-gradient-to-br ${f.gradient} hover:border-primary/40 transition-all duration-500 overflow-hidden`}
+                className={`relative rounded-2xl border border-primary/20 bg-gradient-to-br ${f.gradient} hover:border-primary/40 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/10 transition-all duration-500 overflow-hidden`}
               >
                 <div className="p-7">
                   <div className="h-13 w-13 rounded-xl bg-background/50 backdrop-blur-sm flex items-center justify-center mb-4 border border-border/30">
@@ -253,6 +253,69 @@ export default function Features() {
           </section>
         );
       })}
+
+      {/* Comparison: DealerOps vs alternatives */}
+      <section className="py-14 border-t border-border/30">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-8"
+          >
+            <span className="inline-block text-xs font-semibold text-primary uppercase tracking-widest mb-2">Why Switch</span>
+            <h2 className="text-2xl md:text-3xl font-bold mb-2">DealerOps vs the alternatives</h2>
+            <p className="text-sm text-muted-foreground">See how we compare to spreadsheets, generic CRMs, and legacy DMS platforms.</p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="rounded-2xl border border-border/50 overflow-hidden"
+          >
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border/50 bg-muted/30">
+                  <th className="text-left p-4 font-semibold text-foreground">Capability</th>
+                  <th className="p-4 font-semibold text-primary text-center">DealerOps</th>
+                  <th className="p-4 font-semibold text-muted-foreground text-center">Spreadsheets</th>
+                  <th className="p-4 font-semibold text-muted-foreground text-center">Generic CRM</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { cap: "Vehicle stock management", do: true, ss: "Manual", crm: false },
+                  { cap: "DVLA / MOT data checks", do: true, ss: false, crm: false },
+                  { cap: "Customer CRM", do: true, ss: "Basic", crm: true },
+                  { cap: "Sale invoices & PDFs", do: true, ss: false, crm: "Add-on" },
+                  { cap: "Aftersales & complaints", do: true, ss: false, crm: false },
+                  { cap: "Consumer Rights Act engine", do: true, ss: false, crm: false },
+                  { cap: "GDPR compliance centre", do: true, ss: false, crm: "Add-on" },
+                  { cap: "Full audit trail", do: true, ss: false, crm: "Limited" },
+                  { cap: "Built for UK motor trade", do: true, ss: false, crm: false },
+                  { cap: "No per-user pricing", do: true, ss: true, crm: false },
+                ].map((row, idx) => (
+                  <tr key={row.cap} className={`border-b border-border/20 ${idx % 2 === 0 ? "bg-card/20" : ""}`}>
+                    <td className="p-4 text-foreground font-medium">{row.cap}</td>
+                    {[row.do, row.ss, row.crm].map((val, ci) => (
+                      <td key={ci} className="p-4 text-center">
+                        {val === true ? (
+                          <CheckCircle2 className={`h-4 w-4 mx-auto ${ci === 0 ? "text-success" : "text-muted-foreground"}`} />
+                        ) : val === false ? (
+                          <span className="text-muted-foreground/30">—</span>
+                        ) : (
+                          <span className="text-xs text-muted-foreground font-medium">{val}</span>
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </motion.div>
+        </div>
+      </section>
 
       {/* CTA */}
       <section className="py-16 border-t border-border/30 relative">

@@ -228,6 +228,20 @@ export default function Index() {
             </div>
 
             <p className="text-xs text-muted-foreground mt-4">No credit card required · 14-day free trial · Cancel anytime</p>
+
+            {/* Social proof */}
+            <div className="mt-8 inline-flex items-center gap-3 px-5 py-2.5 rounded-full border border-border/50 bg-card/30 backdrop-blur-sm">
+              <div className="flex -space-x-2">
+                {["JH", "SM", "DC", "AK"].map((initials) => (
+                  <div key={initials} className="h-7 w-7 rounded-full bg-gradient-to-br from-primary/40 to-primary/10 border-2 border-background flex items-center justify-center text-[9px] font-bold text-primary">
+                    {initials}
+                  </div>
+                ))}
+              </div>
+              <span className="text-sm text-muted-foreground">
+                Trusted by <span className="text-foreground font-semibold">150+ UK dealers</span>
+              </span>
+            </div>
           </motion.div>
 
           <HeroFeatureShowcase />
@@ -235,9 +249,9 @@ export default function Index() {
       </section>
 
       {/* ═══ Trust Badges ═══ */}
-      <section className="py-10 border-t border-border/30 bg-muted/20">
+      <section className="py-8 border-t border-border/30 bg-gradient-to-r from-primary/[0.03] via-muted/30 to-primary/[0.03]">
         <div className="container mx-auto px-4">
-          <div className="flex flex-wrap items-center justify-center gap-10 md:gap-20">
+          <div className="flex flex-wrap items-center justify-center gap-6 md:gap-12">
             {trustBadges.map((badge, i) => (
               <motion.div
                 key={badge.label}
@@ -245,12 +259,15 @@ export default function Index() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
                 viewport={{ once: true }}
-                className="flex items-center gap-2.5 text-muted-foreground"
+                className="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-border/40 bg-card/40 backdrop-blur-sm"
               >
-                <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <badge.icon className="h-4 w-4 text-primary" />
+                <div className="h-9 w-9 rounded-lg bg-primary/15 flex items-center justify-center">
+                  <badge.icon className="h-4.5 w-4.5 text-primary" />
                 </div>
-                <span className="text-xs font-semibold tracking-wide uppercase">{badge.label}</span>
+                <div>
+                  <span className="text-xs font-bold text-foreground block">{badge.label}</span>
+                  <span className="text-[10px] text-muted-foreground">Verified</span>
+                </div>
               </motion.div>
             ))}
           </div>
