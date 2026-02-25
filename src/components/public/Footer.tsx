@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import doLogo from "@/assets/dologo.png";
-import { ShieldCheck, Lock, Globe, Award } from "lucide-react";
+import { ShieldCheck, Lock, Globe, Award, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const trustBadges = [
   { icon: ShieldCheck, label: "GDPR" },
@@ -12,6 +13,21 @@ const trustBadges = [
 export function Footer() {
   return (
     <footer className="border-t border-border/30 bg-muted/10">
+      {/* Mini CTA */}
+      <div className="border-b border-border/30 bg-gradient-to-r from-primary/[0.04] via-primary/[0.08] to-primary/[0.04]">
+        <div className="container mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
+            <h3 className="text-sm font-bold text-foreground">Ready to get started?</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">14-day free trial · No credit card required</p>
+          </div>
+          <Link to="/login?mode=signup">
+            <Button size="sm" className="glow font-semibold">
+              Start Free Trial <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+            </Button>
+          </Link>
+        </div>
+      </div>
+
       <div className="container mx-auto px-4 py-14">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
           {/* Brand column */}
