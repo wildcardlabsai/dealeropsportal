@@ -2014,6 +2014,60 @@ export type Database = {
           },
         ]
       }
+      generated_leads: {
+        Row: {
+          created_at: string
+          created_by_user_id: string | null
+          dealership_name: string
+          email: string | null
+          id: string
+          location: string | null
+          phone: string | null
+          pitch_email_body: string | null
+          pitch_email_subject: string | null
+          search_query: string | null
+          sent_at: string | null
+          source_url: string | null
+          status: string
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by_user_id?: string | null
+          dealership_name: string
+          email?: string | null
+          id?: string
+          location?: string | null
+          phone?: string | null
+          pitch_email_body?: string | null
+          pitch_email_subject?: string | null
+          search_query?: string | null
+          sent_at?: string | null
+          source_url?: string | null
+          status?: string
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by_user_id?: string | null
+          dealership_name?: string
+          email?: string | null
+          id?: string
+          location?: string | null
+          phone?: string | null
+          pitch_email_body?: string | null
+          pitch_email_subject?: string | null
+          search_query?: string | null
+          sent_at?: string | null
+          source_url?: string | null
+          status?: string
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       handover_items: {
         Row: {
           completed: boolean
