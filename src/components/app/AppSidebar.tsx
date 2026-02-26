@@ -2,7 +2,7 @@ import {
   LayoutDashboard, Users, Car, FileText, Shield, ShieldAlert, ShieldCheck, Wrench, CarFront,
   Target, ClipboardCheck, Star, FolderOpen, BarChart3, MessageSquare,
   CreditCard, Settings, ScrollText, Search, LogOut, Building2, UsersRound, TrendingUp, Gauge, PackageCheck,
-  HeartPulse, Megaphone, ToggleLeft, FileSearch, Inbox, BookOpen, LineChart,
+  HeartPulse, Megaphone, ToggleLeft, FileSearch, Inbox, BookOpen, LineChart, Crosshair,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import doLogo from "@/assets/dologo.png";
@@ -51,6 +51,7 @@ const adminNav = [
 
 const superAdminNav = [
   { title: "Analytics", url: "/app/admin/analytics", icon: LineChart },
+  { title: "Lead Generator", url: "/app/admin/lead-generator", icon: Crosshair },
   { title: "Potential Leads", url: "/app/admin/leads", icon: Inbox },
   { title: "Dealer Health", url: "/app/admin/health", icon: HeartPulse },
   { title: "Dealers", url: "/app/admin/dealers", icon: Building2 },
