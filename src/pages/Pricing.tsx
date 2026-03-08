@@ -56,6 +56,7 @@ const plans = [
     monthly: 199,
     annual: 159,
     description: "For high-volume and multi-site dealers",
+    contactSales: true,
     features: [
       "Unlimited users",
       "Everything in Professional",
@@ -108,7 +109,7 @@ const trustBadges = [
 
 export default function Pricing() {
   const [annual, setAnnual] = useState(false);
-  const [showComparison, setShowComparison] = useState(false);
+  const [showComparison, setShowComparison] = useState(true);
 
   return (
     <div>
@@ -202,14 +203,23 @@ export default function Pricing() {
                   ))}
                 </ul>
 
-                <Link to="/login?mode=signup">
-                  <Button
-                    className={`w-full h-11 ${plan.highlighted ? "glow font-semibold" : ""}`}
-                    variant={plan.highlighted ? "default" : "outline"}
-                  >
-                    {plan.cta}
-                  </Button>
-                </Link>
+                <div className="space-y-2">
+                  <Link to="/login?mode=signup">
+                    <Button
+                      className={`w-full h-11 ${plan.highlighted ? "glow font-semibold" : ""}`}
+                      variant={plan.highlighted ? "default" : "outline"}
+                    >
+                      {plan.cta}
+                    </Button>
+                  </Link>
+                  {(plan as any).contactSales && (
+                    <Link to="/contact">
+                      <Button variant="ghost" className="w-full h-9 text-xs text-muted-foreground">
+                        Or contact sales
+                      </Button>
+                    </Link>
+                  )}
+                </div>
               </motion.div>
             ))}
           </div>

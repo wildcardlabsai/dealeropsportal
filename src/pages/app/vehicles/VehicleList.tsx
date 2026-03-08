@@ -10,6 +10,8 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import { usePagination } from "@/hooks/usePagination";
+import { PaginationControls } from "@/components/app/PaginationControls";
 
 const statusColors: Record<string, string> = {
   in_stock: "bg-success/10 text-success border-success/20",
@@ -31,6 +33,7 @@ export default function VehicleList() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const { data: vehicles, isLoading } = useVehicles(search, statusFilter);
+  const { page, setPage, totalPages, totalItems, paginatedItems, pageSize } = usePagination(vehicles);
   const navigate = useNavigate();
 
   return (
@@ -86,17 +89,18 @@ export default function VehicleList() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-border/50">
-                  <th className="text-left text-xs font-medium text-muted-foreground p-3">VRM</th>
+                 <th className="text-left text-xs font-medium text-muted-foreground p-3">VRM</th>
                   <th className="text-left text-xs font-medium text-muted-foreground p-3">Vehicle</th>
                   <th className="text-left text-xs font-medium text-muted-foreground p-3 hidden md:table-cell">Year</th>
                   <th className="text-left text-xs font-medium text-muted-foreground p-3 hidden md:table-cell">Mileage</th>
                   <th className="text-left text-xs font-medium text-muted-foreground p-3 hidden lg:table-cell">Price</th>
+                  <th className="text-left text-xs font-medium text-muted-foreground p-3 hidden lg:table-cell">Days in Stock</th>
                   <th className="text-left text-xs font-medium text-muted-foreground p-3">Status</th>
                   <th className="text-right text-xs font-medium text-muted-foreground p-3 w-10"></th>
                 </tr>
               </thead>
               <tbody>
-                {vehicles.map((v) => (
+                {paginatedItems.map((v) => (
                   <tr
                     key={v.id}
                     onClick={() => navigate(`/app/vehicles/${v.id}`)}
@@ -115,6 +119,12 @@ export default function VehicleList() {
                     </td>
                     <td className="p-3 hidden lg:table-cell text-sm">
                       {v.advertised_price ? `£${Number(v.advertised_price).toLocaleString()}` : "—"}
+                    </td>
+                    <td className="p-3 hidden lg:table-cell text-xs text-muted-foreground">
+                      {(() => {
+                        const days = Math.floor((Date.now() - new Date(v.created_at).getTime()) / 86400000);
+                        return <span className={days > 90 ? "text-destructive font-medium" : days > 60 ? "text-warning" : ""}>{days}d</span>;
+                      })()}
                     </td>
                     <td className="p-3">
                       <span className={`text-xs px-2 py-0.5 rounded-full border ${statusColors[v.status] || ""}`}>
@@ -140,6 +150,7 @@ export default function VehicleList() {
               </tbody>
             </table>
           </div>
+          <PaginationControls page={page} totalPages={totalPages} onPageChange={setPage} totalItems={totalItems} pageSize={pageSize} />
         </div>
       )}
     </motion.div>

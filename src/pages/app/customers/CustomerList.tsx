@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { Plus, Search, Phone, Mail, MoreHorizontal, Trash2, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { usePagination } from "@/hooks/usePagination";
+import { PaginationControls } from "@/components/app/PaginationControls";
 import { useCustomers, useSoftDeleteCustomer } from "@/hooks/useCustomers";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
@@ -17,6 +19,7 @@ import { toast } from "sonner";
 export default function CustomerList() {
   const [search, setSearch] = useState("");
   const { data: customers, isLoading } = useCustomers(search);
+  const { page, setPage, totalPages, totalItems, paginatedItems, pageSize } = usePagination(customers);
   const softDelete = useSoftDeleteCustomer();
   const navigate = useNavigate();
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -85,14 +88,19 @@ export default function CustomerList() {
                 </tr>
               </thead>
               <tbody>
-                {customers.map((c) => (
+                {paginatedItems.map((c) => (
                   <tr
                     key={c.id}
                     onClick={() => navigate(`/app/customers/${c.id}`)}
                     className="border-b border-border/30 hover:bg-muted/30 cursor-pointer transition-colors"
                   >
                     <td className="p-3">
-                      <p className="text-sm font-medium text-foreground">{c.first_name} {c.last_name}</p>
+                      <div className="flex items-center gap-3">
+                        <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary shrink-0">
+                          {c.first_name?.[0]}{c.last_name?.[0]}
+                        </div>
+                        <p className="text-sm font-medium text-foreground">{c.first_name} {c.last_name}</p>
+                      </div>
                     </td>
                     <td className="p-3 hidden md:table-cell">
                       <div className="flex flex-col gap-1">
@@ -143,6 +151,7 @@ export default function CustomerList() {
               </tbody>
             </table>
           </div>
+          <PaginationControls page={page} totalPages={totalPages} onPageChange={setPage} totalItems={totalItems} pageSize={pageSize} />
         </div>
       )}
 
