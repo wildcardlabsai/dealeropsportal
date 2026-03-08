@@ -116,6 +116,8 @@ export function AppLayout() {
           </header>
           <CommandPalette />
           <TrialBanner />
+          <main className="flex-1 p-6">
+            <Outlet />
           </main>
         </div>
       </div>
