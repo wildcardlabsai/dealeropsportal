@@ -4,6 +4,7 @@ import {
   Plus, ArrowUpRight, ArrowDownRight, Minus, Megaphone, ShieldAlert, TrendingUp,
   PoundSterling
 } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from "recharts";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -431,29 +432,32 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {/* Lead Funnel + Stock Ageing */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
         <div className="p-6 rounded-xl border border-border/50 bg-card/50">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold">Lead Conversion Funnel</h3>
             <button onClick={() => navigate("/app/leads")} className="text-xs text-primary hover:underline">View all</button>
           </div>
-          <div className="space-y-3">
-            {funnel?.map(stage => (
-              <div key={stage.stage}>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs text-muted-foreground">{stage.stage}</span>
-                  <span className="text-xs font-medium">{stage.count}</span>
-                </div>
-                <div className="h-2 rounded-full bg-muted overflow-hidden">
-                  <div
-                    className={`h-full rounded-full ${stage.color} transition-all duration-500`}
-                    style={{ width: `${maxFunnel > 0 ? (stage.count / maxFunnel) * 100 : 0}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
+          {funnel && funnel.length > 0 ? (
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={funnel} layout="vertical" margin={{ left: 20, right: 10, top: 0, bottom: 0 }}>
+                <XAxis type="number" hide />
+                <YAxis type="category" dataKey="stage" tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} width={80} axisLine={false} tickLine={false} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }}
+                  cursor={{ fill: "hsl(var(--muted) / 0.3)" }}
+                />
+                <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={18}>
+                  {funnel.map((entry, index) => {
+                    const colors = ["hsl(var(--primary))", "#3b82f6", "#f59e0b", "#f97316", "#10b981", "hsl(var(--destructive))"];
+                    return <Cell key={index} fill={colors[index % colors.length]} />;
+                  })}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex items-center justify-center h-[200px] text-sm text-muted-foreground">No lead data yet</div>
+          )}
         </div>
 
         <div className="p-6 rounded-xl border border-border/50 bg-card/50">
@@ -461,22 +465,49 @@ export default function Dashboard() {
             <h3 className="text-sm font-semibold">Stock Ageing</h3>
             <span className="text-xs text-muted-foreground">{totalStock} vehicles</span>
           </div>
-          <div className="space-y-3">
-            {ageing?.map(bucket => (
-              <div key={bucket.label}>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs text-muted-foreground">{bucket.label}</span>
-                  <span className="text-xs font-medium">{bucket.count}</span>
-                </div>
-                <div className="h-2 rounded-full bg-muted overflow-hidden">
-                  <div
-                    className={`h-full rounded-full ${bucket.color} transition-all duration-500`}
-                    style={{ width: `${totalStock > 0 ? (bucket.count / totalStock) * 100 : 0}%` }}
+          {ageing && totalStock > 0 ? (
+            <div className="flex items-center gap-6">
+              <ResponsiveContainer width="50%" height={180}>
+                <PieChart>
+                  <Pie
+                    data={ageing}
+                    dataKey="count"
+                    nameKey="label"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={40}
+                    outerRadius={70}
+                    strokeWidth={2}
+                    stroke="hsl(var(--background))"
+                  >
+                    {ageing.map((_, index) => {
+                      const colors = ["#10b981", "#f59e0b", "#f97316", "hsl(var(--destructive))"];
+                      return <Cell key={index} fill={colors[index % colors.length]} />;
+                    })}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }}
                   />
-                </div>
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="space-y-2.5 flex-1">
+                {ageing.map((bucket, i) => {
+                  const colors = ["bg-emerald-500", "bg-amber-500", "bg-orange-500", "bg-destructive"];
+                  return (
+                    <div key={bucket.label} className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className={`h-2.5 w-2.5 rounded-full ${colors[i]}`} />
+                        <span className="text-xs text-muted-foreground">{bucket.label}</span>
+                      </div>
+                      <span className="text-xs font-medium">{bucket.count}</span>
+                    </div>
+                  );
+                })}
               </div>
-            ))}
-          </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-[180px] text-sm text-muted-foreground">No stock data</div>
+          )}
           {(ageing?.[3]?.count ?? 0) > 0 && (
             <div className="mt-3 p-2 rounded-lg bg-destructive/5 border border-destructive/20">
               <p className="text-xs text-destructive flex items-center gap-1.5">
